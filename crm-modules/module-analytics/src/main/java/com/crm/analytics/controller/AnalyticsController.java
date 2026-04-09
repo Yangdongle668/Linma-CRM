@@ -222,6 +222,3 @@ public class AnalyticsController {
         return Result.success(todos);
     }
 }
-public class AnalyticsController {
-    
-}

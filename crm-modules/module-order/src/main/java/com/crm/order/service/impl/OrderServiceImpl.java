@@ -618,6 +618,3 @@ public class OrderServiceImpl extends ServiceImpl<CrmOrderMapper, CrmOrder> impl
         return vo;
     }
 }
-public class OrderServiceImpl {
-    
-}

@@ -55,6 +55,3 @@ public interface AnalyticsMapper {
     List<Map<String, Object>> getRegionSalesStats(@Param("startDate") String startDate,
                                                     @Param("endDate") String endDate);
 }
-public class AnalyticsMapper {
-    
-}

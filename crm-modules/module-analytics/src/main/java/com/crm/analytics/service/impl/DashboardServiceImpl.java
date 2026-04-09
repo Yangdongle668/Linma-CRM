@@ -137,6 +137,3 @@ public class DashboardServiceImpl implements DashboardService {
         return new ArrayList<>();
     }
 }
-public class DashboardServiceImpl {
-    
-}
