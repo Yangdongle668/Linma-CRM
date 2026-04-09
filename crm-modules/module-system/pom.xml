@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.crm</groupId>
+        <artifactId>crm-modules</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>module-system</artifactId>
+    <packaging>jar</packaging>
+    <name>Module System</name>
+    <description>系统管理模块 - 用户、角色、菜单、部门、字典、配置等基础功能</description>
+
+    <dependencies>
+        <!-- Common Core -->
+        <dependency>
+            <groupId>com.crm</groupId>
+            <artifactId>common-core</artifactId>
+        </dependency>
+
+        <!-- Common Security -->
+        <dependency>
+            <groupId>com.crm</groupId>
+            <artifactId>common-security</artifactId>
+        </dependency>
+
+        <!-- Common Log -->
+        <dependency>
+            <groupId>com.crm</groupId>
+            <artifactId>common-log</artifactId>
+        </dependency>
+
+        <!-- Common Redis -->
+        <dependency>
+            <groupId>com.crm</groupId>
+            <artifactId>common-redis</artifactId>
+        </dependency>
+
+        <!-- Common MyBatis -->
+        <dependency>
+            <groupId>com.crm</groupId>
+            <artifactId>common-mybatis</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- MapStruct -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+    </dependencies>
+</project>

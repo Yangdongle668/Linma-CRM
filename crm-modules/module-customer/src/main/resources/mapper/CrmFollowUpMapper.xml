@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.customer.mapper.CrmFollowUpMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.crm.customer.domain.entity.CrmFollowUp">
+        <id column="id" property="id"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="contact_id" property="contactId"/>
+        <result column="follow_type" property="followType"/>
+        <result column="follow_content" property="followContent"/>
+        <result column="next_plan" property="nextPlan"/>
+        <result column="next_follow_time" property="nextFollowTime"/>
+        <result column="attachment_urls" property="attachmentUrls"/>
+        <result column="duration" property="duration"/>
+        <result column="satisfaction" property="satisfaction"/>
+        <result column="follow_user_id" property="followUserId"/>
+        <result column="follow_time" property="followTime"/>
+        <result column="location" property="location"/>
+        <result column="photos" property="photos"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 根据客户ID获取跟进记录列表（按时间倒序） -->
+    <select id="selectByCustomerId" resultMap="BaseResultMap">
+        SELECT * FROM crm_follow_up
+        WHERE customer_id = #{customerId}
+        AND deleted = 0
+        ORDER BY follow_time DESC
+    </select>
+
+    <!-- 查询今日需跟进的客户列表 -->
+    <select id="selectTodayFollowUps" resultMap="BaseResultMap">
+        SELECT * FROM crm_follow_up
+        WHERE deleted = 0
+        AND next_follow_time &gt;= #{todayStart}
+        AND next_follow_time &lt;= #{todayEnd}
+        ORDER BY next_follow_time ASC
+    </select>
+
+    <!-- 查询即将到期的跟进提醒 -->
+    <select id="selectUpcomingReminders" resultMap="BaseResultMap">
+        SELECT * FROM crm_follow_up
+        WHERE deleted = 0
+        AND next_follow_time &gt;= #{now}
+        AND next_follow_time &lt;= #{endTime}
+        ORDER BY next_follow_time ASC
+    </select>
+
+</mapper>

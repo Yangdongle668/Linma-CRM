@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.customer.mapper.CrmContactMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.crm.customer.domain.entity.CrmContact">
+        <id column="id" property="id"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="first_name" property="firstName"/>
+        <result column="last_name" property="lastName"/>
+        <result column="full_name" property="fullName"/>
+        <result column="gender" property="gender"/>
+        <result column="position" property="position"/>
+        <result column="department" property="department"/>
+        <result column="phone" property="phone"/>
+        <result column="tel" property="tel"/>
+        <result column="email" property="email"/>
+        <result column="wechat" property="wechat"/>
+        <result column="linkedin" property="linkedin"/>
+        <result column="is_key_person" property="isKeyPerson"/>
+        <result column="key_person_type" property="keyPersonType"/>
+        <result column="birthday" property="birthday"/>
+        <result column="language_pref" property="languagePref"/>
+        <result column="communication_pref" property="communicationPref"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="deleted" property="deleted"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 根据客户ID获取联系人列表 -->
+    <select id="selectByCustomerId" resultMap="BaseResultMap">
+        SELECT * FROM crm_contact
+        WHERE customer_id = #{customerId}
+        AND deleted = 0
+        ORDER BY is_key_person DESC, created_time ASC
+    </select>
+
+    <!-- 根据邮箱查询联系人（用于查重） -->
+    <select id="selectByEmail" resultMap="BaseResultMap">
+        SELECT * FROM crm_contact
+        WHERE email = #{email}
+        AND deleted = 0
+    </select>
+
+    <!-- 根据电话查询联系人（用于查重） -->
+    <select id="selectByPhone" resultMap="BaseResultMap">
+        SELECT * FROM crm_contact
+        WHERE (phone = #{phone} OR tel = #{phone})
+        AND deleted = 0
+    </select>
+
+</mapper>

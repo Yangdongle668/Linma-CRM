@@ -1,0 +1,43 @@
+# 生产环境配置
+spring:
+  datasource:
+    # 生产环境使用环境变量或配置中心
+    url: ${DB_URL:jdbc:mysql://mysql-server:3306/crm_db?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai}
+    username: ${DB_USERNAME:crm_user}
+    password: ${DB_PASSWORD:change-me-in-production}
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 50
+
+  data:
+    redis:
+      host: ${REDIS_HOST:redis-server}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:change-me}
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:rabbitmq-server}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:crm_admin}
+    password: ${RABBITMQ_PASSWORD:change-me}
+
+# MyBatis Plus - 生产环境关闭SQL日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+# Knife4j - 生产环境关闭
+knife4j:
+  enable: false
+
+# JWT密钥 - 生产环境必须修改
+jwt:
+  secret: ${JWT_SECRET:change-this-to-a-very-long-random-string-in-production}
+
+# 日志级别
+logging:
+  level:
+    root: WARN
+    com.crm: INFO
+  file:
+    path: /app/logs

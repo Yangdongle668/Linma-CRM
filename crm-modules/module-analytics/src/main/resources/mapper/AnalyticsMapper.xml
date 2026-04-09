@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.analytics.mapper.AnalyticsMapper">
+
+    <!--
+        BI模块复杂SQL查询示例
+
+        注意: 由于BI模块主要使用JdbcTemplate执行原生SQL进行统计分析,
+        这里提供一些常用复杂查询的SQL示例供参考。
+    -->
+
+    <!-- 销售漏斗统计 -->
+    <select id="getSalesFunnelStats" resultType="java.util.HashMap">
+        SELECT
+            'leads' as stage,
+            COUNT(*) as count
+        FROM crm_lead
+        WHERE deleted = 0
+          AND created_time BETWEEN #{startDate} AND #{endDate}
+
+        UNION ALL
+
+        SELECT
+            'customers' as stage,
+            COUNT(*) as count
+        FROM crm_customer
+        WHERE deleted = 0
+          AND created_time BETWEEN #{startDate} AND #{endDate}
+
+        UNION ALL
+
+        SELECT
+            'inquiries' as stage,
+            COUNT(*) as count
+        FROM crm_inquiry
+        WHERE deleted = 0
+          AND created_time BETWEEN #{startDate} AND #{endDate}
+
+        UNION ALL
+
+        SELECT
+            'quotations' as stage,
+            COUNT(*) as count
+        FROM crm_quotation
+        WHERE deleted = 0
+          AND created_time BETWEEN #{startDate} AND #{endDate}
+
+        UNION ALL
+
+        SELECT
+            'orders' as stage,
+            COUNT(*) as count
+        FROM crm_order
+        WHERE deleted = 0
+          AND order_date BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <!-- RFM模型分析 -->
+    <select id="getRFMData" resultType="java.util.HashMap">
+        SELECT
+            c.id,
+            c.customer_name,
+            c.level,
+            DATEDIFF(CURDATE(), MAX(o.order_date)) as recency,
+            COUNT(DISTINCT o.id) as frequency,
+            SUM(o.total_amount) as monetary,
+            CASE
+                WHEN DATEDIFF(CURDATE(), MAX(o.order_date)) <= 30 THEN '活跃'
+                WHEN DATEDIFF(CURDATE(), MAX(o.order_date)) <= 90 THEN '一般'
+                ELSE '沉睡'
+            END as customerStatus
+        FROM crm_customer c
+        LEFT JOIN crm_order o ON c.id = o.customer_id AND o.deleted = 0
+        WHERE c.deleted = 0
+        GROUP BY c.id, c.customer_name, c.level
+        HAVING frequency > 0
+        ORDER BY monetary DESC
+    </select>
+
+    <!-- 产品销售排行 -->
+    <select id="getProductSalesRanking" resultType="java.util.HashMap">
+        SELECT
+            p.id as productId,
+            p.product_name as productName,
+            p.product_code as productCode,
+            pc.category_name as categoryName,
+            SUM(oi.quantity) as totalQuantity,
+            SUM(oi.total_amount) as totalAmount,
+            COUNT(DISTINCT o.id) as orderCount,
+            COUNT(DISTINCT o.customer_id) as customerCount
+        FROM crm_order_item oi
+        INNER JOIN crm_order o ON oi.order_id = o.id
+        INNER JOIN crm_product p ON oi.product_id = p.id
+        LEFT JOIN crm_product_category pc ON p.category_id = pc.id
+        WHERE o.deleted = 0
+          AND oi.deleted = 0
+          AND o.status != 'cancelled'
+          AND o.order_date BETWEEN #{startDate} AND #{endDate}
+        GROUP BY p.id, p.product_name, p.product_code, pc.category_name
+        ORDER BY totalQuantity DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 区域销售统计 -->
+    <select id="getRegionSalesStats" resultType="java.util.HashMap">
+        SELECT
+            c.country as countryCode,
+            CASE c.country
+                WHEN 'US' THEN '北美洲'
+                WHEN 'CA' THEN '北美洲'
+                WHEN 'DE' THEN '欧洲'
+                WHEN 'GB' THEN '欧洲'
+                WHEN 'FR' THEN '欧洲'
+                WHEN 'AU' THEN '大洋洲'
+                WHEN 'JP' THEN '亚洲'
+                WHEN 'CN' THEN '亚洲'
+                ELSE '其他'
+            END as region,
+            COUNT(DISTINCT c.id) as customerCount,
+            COUNT(DISTINCT o.id) as orderCount,
+            COALESCE(SUM(o.total_amount), 0) as totalSales,
+            COALESCE(AVG(o.total_amount), 0) as avgOrderValue
+        FROM crm_customer c
+        LEFT JOIN crm_order o ON c.id = o.customer_id
+            AND o.deleted = 0
+            AND o.order_date BETWEEN #{startDate} AND #{endDate}
+        WHERE c.deleted = 0
+        GROUP BY c.country
+        ORDER BY totalSales DESC
+    </select>
+
+</mapper>

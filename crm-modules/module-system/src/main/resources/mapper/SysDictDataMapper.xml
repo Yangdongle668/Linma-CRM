@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.system.mapper.SysDictDataMapper">
+
+    <!-- 根据字典类型查询字典数据列表 -->
+    <select id="selectDictDataByType" resultType="com.crm.system.domain.entity.SysDictData">
+        SELECT *
+        FROM sys_dict_data
+        WHERE dict_type = #{dictType}
+          AND status = '0'
+          AND deleted = 0
+        ORDER BY dict_sort ASC
+    </select>
+
+</mapper>

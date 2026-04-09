@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.crm</groupId>
+        <artifactId>foreign-trade-crm</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>crm-modules</artifactId>
+    <packaging>pom</packaging>
+    <name>CRM Modules</name>
+    <description>业务模块集合</description>
+
+    <modules>
+        <module>module-system</module>
+        <module>module-customer</module>
+        <module>module-product</module>
+        <module>module-inquiry</module>
+        <module>module-contract</module>
+        <module>module-quotation</module>
+        <module>module-order</module>
+        <module>module-shipping</module>
+        <module>module-finance</module>
+        <module>module-analytics</module>
+        <module>module-message</module>
+        <module>module-business</module>
+        <module>module-statistics</module>
+    </modules>
+</project>

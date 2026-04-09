@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.shipping.mapper.CrmShippingMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        s.id, s.shipping_no, s.order_id, s.order_no, s.customer_id, s.customer_name,
+        s.carrier, s.tracking_no, s.shipping_date, s.estimated_arrival_date, s.actual_arrival_date,
+        s.carton_count, s.total_volume, s.total_gross_weight, s.total_net_weight,
+        s.customs_status, s.customs_declaration_no, s.status,
+        s.port_of_loading, s.port_of_destination, s.trade_term,
+        s.remark, s.owner_id, s.department_id,
+        s.created_by, s.created_time, s.updated_by, s.updated_time
+    </sql>
+
+    <!-- 分页查询发货单列表 -->
+    <select id="selectShippingPage" resultType="com.crm.shipping.domain.vo.ShippingVO">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM crm_shipping s
+        WHERE s.deleted = 0
+        <if test="query.shippingNo != null and query.shippingNo != ''">
+            AND s.shipping_no LIKE CONCAT('%', #{query.shippingNo}, '%')
+        </if>
+        <if test="query.orderId != null">
+            AND s.order_id = #{query.orderId}
+        </if>
+        <if test="query.orderNo != null and query.orderNo != ''">
+            AND s.order_no LIKE CONCAT('%', #{query.orderNo}, '%')
+        </if>
+        <if test="query.customerId != null">
+            AND s.customer_id = #{query.customerId}
+        </if>
+        <if test="query.customerName != null and query.customerName != ''">
+            AND s.customer_name LIKE CONCAT('%', #{query.customerName}, '%')
+        </if>
+        <if test="query.carrier != null and query.carrier != ''">
+            AND s.carrier = #{query.carrier}
+        </if>
+        <if test="query.trackingNo != null and query.trackingNo != ''">
+            AND s.tracking_no LIKE CONCAT('%', #{query.trackingNo}, '%')
+        </if>
+        <if test="query.status != null and query.status != ''">
+            AND s.status = #{query.status}
+        </if>
+        <if test="query.customsStatus != null and query.customsStatus != ''">
+            AND s.customs_status = #{query.customsStatus}
+        </if>
+        <if test="query.startDate != null">
+            AND s.shipping_date &gt;= #{query.startDate}
+        </if>
+        <if test="query.endDate != null">
+            AND s.shipping_date &lt;= #{query.endDate}
+        </if>
+        <if test="query.ownerId != null">
+            AND s.owner_id = #{query.ownerId}
+        </if>
+        <if test="query.departmentId != null">
+            AND s.department_id = #{query.departmentId}
+        </if>
+        ORDER BY s.created_time DESC
+    </select>
+
+</mapper>

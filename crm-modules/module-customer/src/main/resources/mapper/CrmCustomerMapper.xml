@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.customer.mapper.CrmCustomerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.crm.customer.domain.entity.CrmCustomer">
+        <id column="id" property="id"/>
+        <result column="customer_no" property="customerNo"/>
+        <result column="company_name" property="companyName"/>
+        <result column="company_name_cn" property="companyNameCn"/>
+        <result column="country" property="country"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="address" property="address"/>
+        <result column="website" property="website"/>
+        <result column="industry" property="industry"/>
+        <result column="source" property="source"/>
+        <result column="level" property="level"/>
+        <result column="status" property="status"/>
+        <result column="owner_id" property="ownerId"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="next_follow_time" property="nextFollowTime"/>
+        <result column="total_inquiry" property="totalInquiry"/>
+        <result column="total_order" property="totalOrder"/>
+        <result column="last_order_date" property="lastOrderDate"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="deleted" property="deleted"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 根据公司名查询客户（用于查重） -->
+    <select id="selectByCompanyName" resultMap="BaseResultMap">
+        SELECT * FROM crm_customer
+        WHERE deleted = 0
+        AND (company_name LIKE CONCAT('%', #{companyName}, '%')
+        OR company_name_cn LIKE CONCAT('%', #{companyName}, '%'))
+    </select>
+
+    <!-- 根据邮箱查询客户（用于查重） -->
+    <select id="selectByEmail" resultMap="BaseResultMap">
+        SELECT c.* FROM crm_customer c
+        INNER JOIN crm_contact ct ON c.id = ct.customer_id
+        WHERE c.deleted = 0 AND ct.deleted = 0
+        AND ct.email = #{email}
+    </select>
+
+    <!-- 根据电话查询客户（用于查重） -->
+    <select id="selectByPhone" resultMap="BaseResultMap">
+        SELECT c.* FROM crm_customer c
+        INNER JOIN crm_contact ct ON c.id = ct.customer_id
+        WHERE c.deleted = 0 AND ct.deleted = 0
+        AND (ct.phone = #{phone} OR ct.tel = #{phone})
+    </select>
+
+    <!-- 根据网站查询客户（用于查重） -->
+    <select id="selectByWebsite" resultMap="BaseResultMap">
+        SELECT * FROM crm_customer
+        WHERE deleted = 0
+        AND website = #{website}
+    </select>
+
+    <!-- 查询公海池客户（owner_id为NULL的客户） -->
+    <select id="selectHighSeaCustomers" resultMap="BaseResultMap">
+        SELECT * FROM crm_customer
+        WHERE deleted = 0
+        AND owner_id IS NULL
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 查询需要自动回收的客户（超过指定天数未跟进） -->
+    <select id="selectRecycleCustomers" resultMap="BaseResultMap">
+        SELECT * FROM crm_customer
+        WHERE deleted = 0
+        AND owner_id IS NOT NULL
+        AND (next_follow_time IS NULL OR next_follow_time &lt; DATE_SUB(NOW(), INTERVAL #{days} DAY))
+        ORDER BY next_follow_time ASC
+    </select>
+
+</mapper>
