@@ -16,30 +16,6 @@
     <description>数据分析BI模块 - 包含销售漏斗、业绩排行、客户分析、产品分析、区域分析、趋势分析等功能</description>
 
     <dependencies>
-        <!-- Common Core -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-core</artifactId>
-        </dependency>
-
-        <!-- Common Security -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-security</artifactId>
-        </dependency>
-
-        <!-- Common MyBatis -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-mybatis</artifactId>
-        </dependency>
-
-        <!-- Common Redis -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-redis</artifactId>
-        </dependency>
-
         <!-- Hutool -->
         <dependency>
             <groupId>cn.hutool</groupId>

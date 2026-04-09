@@ -16,36 +16,6 @@
     <description>报价单管理模块 - 包含报价单CRUD、多币种支持、PDF生成、审批流程等功能</description>
 
     <dependencies>
-        <!-- Common Core -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-core</artifactId>
-        </dependency>
-
-        <!-- Common Security -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-security</artifactId>
-        </dependency>
-
-        <!-- Common MyBatis -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-mybatis</artifactId>
-        </dependency>
-
-        <!-- Common Redis -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-redis</artifactId>
-        </dependency>
-
-        <!-- Common Log -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-log</artifactId>
-        </dependency>
-
         <!-- iText PDF -->
         <dependency>
             <groupId>com.itextpdf</groupId>

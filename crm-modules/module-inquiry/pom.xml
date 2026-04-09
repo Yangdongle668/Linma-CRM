@@ -16,36 +16,6 @@
     <description>询盘管理模块 - 包含询盘CRUD、自动分配、状态流转、回复管理等功能</description>
 
     <dependencies>
-        <!-- Common Core -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-core</artifactId>
-        </dependency>
-
-        <!-- Common Security -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-security</artifactId>
-        </dependency>
-
-        <!-- Common MyBatis -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-mybatis</artifactId>
-        </dependency>
-
-        <!-- Common Redis -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-redis</artifactId>
-        </dependency>
-
-        <!-- Common Log -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-log</artifactId>
-        </dependency>
-
         <!-- Hutool -->
         <dependency>
             <groupId>cn.hutool</groupId>

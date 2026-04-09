@@ -16,36 +16,6 @@
     <description>系统管理模块 - 用户、角色、菜单、部门、字典、配置等基础功能</description>
 
     <dependencies>
-        <!-- Common Core -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-core</artifactId>
-        </dependency>
-
-        <!-- Common Security -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-security</artifactId>
-        </dependency>
-
-        <!-- Common Log -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-log</artifactId>
-        </dependency>
-
-        <!-- Common Redis -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-redis</artifactId>
-        </dependency>
-
-        <!-- Common MyBatis -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-mybatis</artifactId>
-        </dependency>
-
         <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

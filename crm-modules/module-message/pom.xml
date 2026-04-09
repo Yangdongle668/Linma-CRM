@@ -16,30 +16,6 @@
     <description>消息通知模块 - 包含站内消息、邮件服务、消息模板等功能,预留企业微信、钉钉、短信集成接口</description>
 
     <dependencies>
-        <!-- Common Core -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-core</artifactId>
-        </dependency>
-
-        <!-- Common Security -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-security</artifactId>
-        </dependency>
-
-        <!-- Common MyBatis -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-mybatis</artifactId>
-        </dependency>
-
-        <!-- Common Redis -->
-        <dependency>
-            <groupId>com.crm</groupId>
-            <artifactId>common-redis</artifactId>
-        </dependency>
-
         <!-- Spring Boot Mail -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
