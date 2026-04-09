@@ -1,8 +1,8 @@
 @echo off
 chcp 65001 >nul
 echo ========================================
-echo   外贸CRM系统 - 快速启动脚本
-echo   Foreign Trade CRM Quick Start
+echo   Linma CRM - 快速启动脚本
+echo   Repository: https://github.com/Yangdongle668/Linma-CRM
 echo ========================================
 echo.
 

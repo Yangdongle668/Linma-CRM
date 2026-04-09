@@ -19,8 +19,8 @@
 
 1. 访问 https://github.com/new
 2. 填写仓库信息:
-   - **Repository name**: `foreign-trade-crm`
-   - **Description**: Foreign Trade CRM System - 外贸客户管理系统
+   - **Repository name**: `Linma-CRM`
+   - **Description**: Linma CRM - Foreign Trade Customer Management System
    - **Visibility**: Public (公开) 或 Private (私有)
    - ✅ Initialize with README (不要勾选,我们已有README)
 
@@ -50,7 +50,7 @@ git add .
 git commit -m "feat: initial commit - complete CRM system"
 
 # 添加远程仓库(替换YOUR_USERNAME为你的GitHub用户名)
-git remote add origin https://github.com/YOUR_USERNAME/foreign-trade-crm.git
+git remote add origin https://github.com/Yangdongle668/Linma-CRM.git
 
 # 推送到GitHub
 git branch -M main
@@ -79,7 +79,7 @@ git push -u origin main
 
 ### 3.1 进入Settings
 
-1. 访问你的仓库: `https://github.com/YOUR_USERNAME/foreign-trade-crm`
+1. 访问你的仓库: `https://github.com/Yangdongle668/Linma-CRM`
 2. 点击 **Settings** 标签
 3. 左侧菜单选择 **Secrets and variables** → **Actions**
 
@@ -165,7 +165,7 @@ Push to main/develop
 
 ### 4.3 查看执行结果
 
-访问: `https://github.com/YOUR_USERNAME/foreign-trade-crm/actions`
+访问: `https://github.com/Yangdongle668/Linma-CRM/actions`
 
 ---
 
@@ -396,5 +396,5 @@ docker system prune -a
 **祝部署顺利!** 🚀
 
 如有问题,请查看:
-- GitHub Issues: https://github.com/YOUR_USERNAME/foreign-trade-crm/issues
+- GitHub Issues: https://github.com/Yangdongle668/Linma-CRM/issues
 - 项目文档: README.md

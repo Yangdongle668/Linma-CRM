@@ -3,6 +3,7 @@
 # ============================================
 # Foreign Trade CRM - One-Click Deploy Script
 # 外贸CRM系统 - 一键部署脚本
+# Repository: https://github.com/Yangdongle668/Linma-CRM
 # ============================================
 
 set -e  # Exit on error
@@ -80,6 +81,41 @@ pull_images() {
     docker-compose pull || print_warning "Some images may not be available in remote registry"
 }
 
+# Pull latest code from GitHub
+pull_code() {
+    print_info "Checking for latest code from GitHub..."
+    
+    # Check if git is installed
+    if ! command -v git &> /dev/null; then
+        print_warning "Git is not installed. Skipping code update."
+        return
+    fi
+    
+    # Check if this is a git repository
+    if [ ! -d ".git" ]; then
+        print_warning "Not a git repository. Skipping code update."
+        print_info "To clone from GitHub, run:"
+        echo "  git clone https://github.com/Yangdongle668/Linma-CRM.git"
+        return
+    fi
+    
+    # Fetch and pull latest changes
+    if git fetch origin main &> /dev/null; then
+        LOCAL=$(git rev-parse HEAD)
+        REMOTE=$(git rev-parse origin/main)
+        
+        if [ "$LOCAL" != "$REMOTE" ]; then
+            print_info "New version available on GitHub. Pulling updates..."
+            git pull origin main
+            print_success "Code updated successfully!"
+        else
+            print_success "Already running the latest version."
+        fi
+    else
+        print_warning "Could not check for updates. Continuing with current version."
+    fi
+}
+
 # Build and start services
 start_services() {
     print_info "Starting services with Docker Compose..."
@@ -154,16 +190,20 @@ main() {
     # Step 1: Check Docker
     check_docker
 
-    # Step 2: Create directories
+    # Step 2: Pull latest code from GitHub (optional)
+    # Uncomment the next line to enable auto-update from GitHub
+    # pull_code
+
+    # Step 3: Create directories
     create_directories
 
-    # Step 3: Stop existing containers
+    # Step 4: Stop existing containers
     stop_existing
 
-    # Step 4: Pull images (optional, comment out if not needed)
+    # Step 5: Pull images (optional, comment out if not needed)
     # pull_images
 
-    # Step 5: Start services
+    # Step 6: Start services
     start_services
 
     # Step 6: Wait for database

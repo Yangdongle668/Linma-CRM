@@ -73,8 +73,8 @@ A comprehensive CRM system designed for foreign trade companies, featuring custo
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/foreign-trade-crm.git
-cd foreign-trade-crm
+git clone https://github.com/Yangdongle668/Linma-CRM.git
+cd Linma-CRM
 
 # Start all services
 docker-compose up -d
@@ -129,7 +129,7 @@ npm run dev
 ## 📁 Project Structure / 项目结构
 
 ```
-foreign-trade-crm/
+Linma-CRM/
 ├── 📄 README.md                     # This file
 ├── 📄 docker-compose.yml            # Docker orchestration
 ├── 📄 pom.xml                       # Parent POM
@@ -508,8 +508,8 @@ Developed with ❤️ using AI-assisted multi-agent collaboration.
 ## 📞 Support / 支持
 
 - 📧 Email: support@yourcompany.com
-- 🐛 Issues: [GitHub Issues](https://github.com/YOUR_USERNAME/foreign-trade-crm/issues)
-- 📖 Documentation: [Wiki](https://github.com/YOUR_USERNAME/foreign-trade-crm/wiki)
+- 🐛 Issues: [GitHub Issues](https://github.com/Yangdongle668/Linma-CRM/issues)
+- 📖 Documentation: [Wiki](https://github.com/Yangdongle668/Linma-CRM/wiki)
 
 ---
 
@@ -517,13 +517,13 @@ Developed with ❤️ using AI-assisted multi-agent collaboration.
 
 If this project helps you, please give it a star! ⭐
 
-[![Star History Chart](https://api.star-history.com/svg?repos=YOUR_USERNAME/foreign-trade-crm&type=Date)](https://star-history.com/#YOUR_USERNAME/foreign-trade-crm&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=Yangdongle668/Linma-CRM&type=Date)](https://star-history.com/#Yangdongle668/Linma-CRM&Date)
 
 ---
 
 <div align="center">
 
-**Made with ❤️ by Foreign Trade CRM Team**
+**Made with ❤️ by Linma CRM Team**
 
 [⬆ Back to Top](#foreign-trade-crm-system---外贸crm系统)
 
