@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+*.iml
+*.ipr
+*.iws
+
+# Documentation
+docs
+*.md
+LICENSE
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Logs
+logs
+*.log
+
+# Data
+data
+
+# Target directories
+crm-admin/target
+crm-common/**/target
+crm-modules/**/target
+
+# Node modules (frontend)
+crm-frontend/node_modules
+crm-frontend/dist
+
+# Test files
+**/src/test
+**/*.test.*
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store

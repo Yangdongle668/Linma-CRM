@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+
+# Production build
+dist
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Git
+.git
+.gitignore
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Test coverage
+coverage
+
+# Temporary files
+*.tmp
+.DS_Store
+
+# Documentation
+*.md
+docs

@@ -3,17 +3,34 @@ FROM maven:3.9-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
-# 复制pom.xml并下载依赖
+# 复制父 POM
 COPY pom.xml .
+
+# 复制 common 模块
 COPY crm-common/pom.xml crm-common/
+COPY crm-common/src crm-common/src
+
+# 复制 modules 父 POM 和所有子模块
 COPY crm-modules/pom.xml crm-modules/
+COPY crm-modules/module-system crm-modules/module-system
+COPY crm-modules/module-customer crm-modules/module-customer
+COPY crm-modules/module-inquiry crm-modules/module-inquiry
+COPY crm-modules/module-quotation crm-modules/module-quotation
+COPY crm-modules/module-order crm-modules/module-order
+COPY crm-modules/module-product crm-modules/module-product
+COPY crm-modules/module-contract crm-modules/module-contract
+COPY crm-modules/module-shipping crm-modules/module-shipping
+COPY crm-modules/module-finance crm-modules/module-finance
+COPY crm-modules/module-analytics crm-modules/module-analytics
+COPY crm-modules/module-message crm-modules/module-message
+
+# 复制 admin 模块
 COPY crm-admin/pom.xml crm-admin/
 
+# 下载依赖
 RUN mvn dependency:go-offline -B
 
-# 复制源代码并编译
-COPY crm-common/src crm-common/src
-COPY crm-modules/src crm-modules/src
+# 复制 admin 源代码并编译
 COPY crm-admin/src crm-admin/src
 
 RUN mvn clean package -DskipTests -B
