@@ -19,7 +19,6 @@
     <description>外贸CRM系统 - 符合中国人使用习惯的外贸客户管理系统</description>
 
     <modules>
-        <module>crm-common</module>
         <module>crm-modules</module>
         <module>crm-admin</module>
     </modules>
@@ -108,31 +107,6 @@
             </dependency>
 
             <!-- 内部模块 -->
-            <dependency>
-                <groupId>com.crm</groupId>
-                <artifactId>common-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.crm</groupId>
-                <artifactId>common-security</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.crm</groupId>
-                <artifactId>common-log</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.crm</groupId>
-                <artifactId>common-redis</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.crm</groupId>
-                <artifactId>common-mybatis</artifactId>
-                <version>${project.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
