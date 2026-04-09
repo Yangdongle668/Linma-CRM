@@ -14,6 +14,7 @@ import com.crm.contract.domain.dto.ContractCreateDTO;
 import com.crm.contract.domain.dto.ContractQuery;
 import com.crm.contract.domain.dto.ContractUpdateDTO;
 import com.crm.contract.domain.entity.CrmContract;
+import com.crm.contract.domain.entity.CrmContractTemplate;
 import com.crm.contract.domain.vo.ContractVO;
 import com.crm.contract.mapper.ContractMapper;
 import com.crm.contract.service.ContractService;
@@ -169,7 +170,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, CrmContract
             throw new BusinessException("无效的审批结果");
         }
 
-        contract.setApproverComment(approvalDTO.getApprovalComment());
+        contract.setApprovalComment(approvalDTO.getApprovalComment());
         this.updateById(contract);
         log.info("合同审批完成, 合同ID: {}, 结果: {}", contract.getId(), approvalDTO.getApprovalResult());
     }
