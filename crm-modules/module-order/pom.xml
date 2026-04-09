@@ -16,6 +16,18 @@
     <description>订单管理模块 - 包含订单CRUD、生产进度跟踪、装箱单、发票管理等功能</description>
 
     <dependencies>
+        <!-- MyBatis Plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        </dependency>
+
+        <!-- Knife4j (Swagger) -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+        </dependency>
+
         <!-- iText PDF -->
         <dependency>
             <groupId>com.itextpdf</groupId>
