@@ -103,6 +103,3 @@ public class CrmFollowUp implements Serializable {
     @TableLogic
     private Integer deleted;
 }
-public class CrmFollowUp {
-    
-}

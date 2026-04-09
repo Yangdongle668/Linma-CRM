@@ -73,6 +73,3 @@ public class ContactUpdateDTO implements Serializable {
     @Schema(description = "备注")
     private String remark;
 }
-public class ContactUpdateDTO {
-    
-}

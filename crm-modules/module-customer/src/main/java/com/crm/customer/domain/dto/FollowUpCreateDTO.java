@@ -55,6 +55,3 @@ public class FollowUpCreateDTO implements Serializable {
     @Schema(description = "拜访照片URL列表")
     private List<String> photos;
 }
-public class FollowUpCreateDTO {
-    
-}

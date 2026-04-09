@@ -31,6 +31,3 @@ public class TagCreateDTO implements Serializable {
     @Schema(description = "自动打标规则(JSON格式)")
     private String autoRule;
 }
-public class TagCreateDTO {
-    
-}

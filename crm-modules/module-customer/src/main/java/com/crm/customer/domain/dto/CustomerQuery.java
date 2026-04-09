@@ -68,6 +68,3 @@ public class CustomerQuery implements Serializable {
     @Schema(description = "关键字(搜索公司名、网站、备注)")
     private String keyword;
 }
-public class CustomerQuery {
-    
-}

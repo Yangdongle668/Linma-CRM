@@ -283,7 +283,7 @@ public class CustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCusto
                 
                 successCount++;
             } catch (Exception e) {
-                log.error("导入客户失败，第{}行", i + 2, e);
+                log.error("导入客户失败，第" + (i + 2) + "行: " + e.getMessage());
                 errorMessages.add("第" + (i + 2) + "行：" + e.getMessage());
                 failCount++;
             }

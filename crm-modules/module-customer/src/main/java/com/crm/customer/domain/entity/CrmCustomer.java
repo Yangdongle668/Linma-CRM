@@ -151,6 +151,3 @@ public class CrmCustomer implements Serializable {
      */
     private String remark;
 }
-public class CrmCustomer {
-    
-}
