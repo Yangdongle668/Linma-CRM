@@ -19,6 +19,7 @@
     <description>外贸CRM系统 - 符合中国人使用习惯的外贸客户管理系统</description>
 
     <modules>
+        <module>crm-common</module>
         <module>crm-modules</module>
         <module>crm-admin</module>
     </modules>

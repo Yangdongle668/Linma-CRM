@@ -16,6 +16,13 @@
     <description>询盘管理模块 - 包含询盘CRUD、自动分配、状态流转、回复管理等功能</description>
 
     <dependencies>
+        <!-- CRM Common -->
+        <dependency>
+            <groupId>com.crm</groupId>
+            <artifactId>crm-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- MyBatis Plus -->
         <dependency>
             <groupId>com.baomidou</groupId>

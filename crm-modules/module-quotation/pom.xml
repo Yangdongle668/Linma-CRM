@@ -16,6 +16,13 @@
     <description>报价单管理模块 - 包含报价单CRUD、多币种支持、PDF生成、审批流程等功能</description>
 
     <dependencies>
+        <!-- CRM Common -->
+        <dependency>
+            <groupId>com.crm</groupId>
+            <artifactId>crm-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- MyBatis Plus -->
         <dependency>
             <groupId>com.baomidou</groupId>

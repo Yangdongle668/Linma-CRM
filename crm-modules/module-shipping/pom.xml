@@ -16,6 +16,13 @@
     <description>物流管理模块 - 包含发货单、物流追踪、装箱信息、报关状态等功能</description>
 
     <dependencies>
+        <!-- CRM Common -->
+        <dependency>
+            <groupId>com.crm</groupId>
+            <artifactId>crm-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- MyBatis Plus -->
         <dependency>
             <groupId>com.baomidou</groupId>

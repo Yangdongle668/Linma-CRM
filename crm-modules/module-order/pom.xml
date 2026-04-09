@@ -16,6 +16,13 @@
     <description>订单管理模块 - 包含订单CRUD、生产进度跟踪、装箱单、发票管理等功能</description>
 
     <dependencies>
+        <!-- CRM Common -->
+        <dependency>
+            <groupId>com.crm</groupId>
+            <artifactId>crm-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- MyBatis Plus -->
         <dependency>
             <groupId>com.baomidou</groupId>
