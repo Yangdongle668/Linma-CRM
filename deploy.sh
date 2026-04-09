@@ -41,8 +41,19 @@ check_docker() {
         exit 1
     fi
 
-    if ! command -v docker-compose &> /dev/null; then
+    # Check for Docker Compose (support both v1 and v2)
+    # v2 uses 'docker compose' (plugin), v1 uses 'docker-compose' (standalone)
+    COMPOSE_VERSION=""
+    if docker compose version &> /dev/null; then
+        COMPOSE_VERSION="v2"
+        print_success "Docker Compose v2 (plugin) detected"
+    elif command -v docker-compose &> /dev/null; then
+        COMPOSE_VERSION="v1"
+        print_success "Docker Compose v1 (standalone) detected"
+    else
         print_error "Docker Compose is not installed."
+        echo "For Docker Compose v2: docker compose plugin"
+        echo "For Docker Compose v1: sudo apt-get install docker-compose"
         exit 1
     fi
 
@@ -53,6 +64,15 @@ check_docker() {
     fi
 
     print_success "Docker is ready!"
+}
+
+# Docker Compose command wrapper (supports both v1 and v2)
+docker_compose() {
+    if [ "$COMPOSE_VERSION" = "v2" ]; then
+        docker compose "$@"
+    else
+        docker-compose "$@"
+    fi
 }
 
 # Create necessary directories
@@ -71,7 +91,7 @@ create_directories() {
 # Stop existing containers
 stop_existing() {
     print_info "Stopping existing containers..."
-    docker-compose down 2>/dev/null || true
+    docker_compose down 2>/dev/null || true
     print_success "Existing containers stopped!"
 }
 
@@ -119,7 +139,7 @@ pull_code() {
 # Build and start services
 start_services() {
     print_info "Starting services with Docker Compose..."
-    docker-compose up -d
+    docker_compose up -d
 
     print_success "All services started!"
 }
@@ -141,7 +161,7 @@ wait_for_database() {
 show_status() {
     print_info "Service Status:"
     echo ""
-    docker-compose ps
+    docker_compose ps
     echo ""
 }
 
