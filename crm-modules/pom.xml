@@ -27,7 +27,5 @@
         <module>module-finance</module>
         <module>module-analytics</module>
         <module>module-message</module>
-        <module>module-business</module>
-        <module>module-statistics</module>
     </modules>
 </project>
