@@ -66,10 +66,32 @@ A comprehensive CRM system designed for foreign trade companies, featuring custo
 - JDK 17+ (for local development)
 - Node.js 18+ (for frontend development)
 - MySQL 8.0 (if not using Docker)
+- Git (for version control and updates)
 
 ### One-Click Deployment / 一键部署
 
-#### Option 1: Docker Compose (Recommended) / 方式一: Docker Compose(推荐)
+#### Option 1: Using Deploy Script (Recommended) / 方式一: 使用部署脚本(推荐)
+
+**Linux/Mac:**
+```bash
+# Clone repository
+git clone https://github.com/Yangdongle668/Linma-CRM.git
+cd Linma-CRM
+
+# Make script executable
+chmod +x deploy.sh
+
+# Run one-click deployment
+./deploy.sh
+```
+
+**Windows:**
+```powershell
+# Double click start.bat or run in PowerShell
+.\start.bat
+```
+
+#### Option 2: Docker Compose Manual / 方式二: Docker Compose 手动部署
 
 ```bash
 # Clone repository
@@ -86,7 +108,7 @@ sleep 30
 docker-compose logs -f backend
 ```
 
-#### Option 2: Local Development / 方式二: 本地开发
+#### Option 3: Local Development / 方式三: 本地开发环境
 
 ```bash
 # 1. Initialize database
@@ -100,7 +122,7 @@ mvn clean install
 cd crm-admin
 mvn spring-boot:run
 
-# 4. Start frontend (optional)
+# 4. Start frontend (in new terminal)
 cd ../crm-frontend
 npm install
 npm run dev
