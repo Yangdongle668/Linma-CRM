@@ -67,4 +67,16 @@ public class CustomerQuery implements Serializable {
 
     @Schema(description = "关键字(搜索公司名、网站、备注)")
     private String keyword;
+
+    @Schema(description = "当前用户ID（用于权限控制）")
+    private Long currentUserId;
+
+    @Schema(description = "当前用户角色（admin/sales，用于权限控制）")
+    private String currentUserRole;
+
+    @Schema(description = "是否只查看我的客户")
+    private Boolean onlyMyCustomers;
+
+    @Schema(description = "是否在公海池")
+    private Integer isHighSea;
 }

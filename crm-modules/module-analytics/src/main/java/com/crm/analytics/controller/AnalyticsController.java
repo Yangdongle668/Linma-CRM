@@ -221,4 +221,45 @@ public class AnalyticsController {
         List<Map<String, Object>> todos = dashboardService.getTodayTodos(userId);
         return Result.success(todos);
     }
+
+    // ==================== 前端Dashboard图表接口 ====================
+
+    @Operation(summary = "获取销售趋势数据")
+    @GetMapping("/trend/sales")
+    public Result<List<Map<String, Object>>> getSalesTrend(
+            @Parameter(description = "周期(week/month/year)") @RequestParam(required = false, defaultValue = "month") String period) {
+        List<Map<String, Object>> trend = trendService.getSalesTrend(period);
+        return Result.success(trend);
+    }
+
+    @Operation(summary = "获取客户增长趋势")
+    @GetMapping("/trend/customers")
+    public Result<List<Map<String, Object>>> getCustomerTrend(
+            @Parameter(description = "周期") @RequestParam(required = false, defaultValue = "month") String period) {
+        List<Map<String, Object>> trend = customerAnalyticsService.getNewCustomerTrend(period);
+        return Result.success(trend);
+    }
+
+    @Operation(summary = "获取产品销量排行")
+    @GetMapping("/product/ranking")
+    public Result<List<Map<String, Object>>> getProductRanking(
+            @Parameter(description = "数量限制") @RequestParam(required = false, defaultValue = "10") Integer limit) {
+        List<Map<String, Object>> ranking = productAnalyticsService.getHotProducts("month", limit);
+        return Result.success(ranking);
+    }
+
+    @Operation(summary = "获取区域分析数据")
+    @GetMapping("/region")
+    public Result<List<Map<String, Object>>> getRegionAnalytics(
+            @Parameter(description = "统计周期") @RequestParam(required = false, defaultValue = "year") String period) {
+        List<Map<String, Object>> data = regionAnalyticsService.getWorldMapHeatmapData(period);
+        return Result.success(data);
+    }
+
+    @Operation(summary = "获取客户分析汇总")
+    @GetMapping("/customer")
+    public Result<Map<String, Object>> getCustomerAnalytics() {
+        Map<String, Object> analytics = customerAnalyticsService.getCustomerSummary();
+        return Result.success(analytics);
+    }
 }

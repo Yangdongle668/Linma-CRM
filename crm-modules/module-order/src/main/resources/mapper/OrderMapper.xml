@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.order.mapper.CrmOrderMapper">
+
+    <!-- 分页查询订单列表(支持高级搜索) -->
+    <select id="selectOrderPage" resultType="com.crm.order.domain.entity.CrmOrder">
+        SELECT * FROM crm_order
+        WHERE deleted = 0
+        <if test="customerId != null">
+            AND customer_id = #{customerId}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        <if test="orderNo != null and orderNo != ''">
+            AND order_no LIKE CONCAT('%', #{orderNo}, '%')
+        </if>
+        <if test="startDate != null">
+            AND created_time &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND created_time &lt;= #{endDate}
+        </if>
+        <if test="ownerId != null">
+            AND sales_id = #{ownerId}
+        </if>
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据客户ID查询订单列表 -->
+    <select id="selectByCustomerId" resultType="com.crm.order.domain.entity.CrmOrder">
+        SELECT * FROM crm_order
+        WHERE deleted = 0
+        AND customer_id = #{customerId}
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据报价单ID查询订单 -->
+    <select id="selectByQuotationId" resultType="com.crm.order.domain.entity.CrmOrder">
+        SELECT * FROM crm_order
+        WHERE deleted = 0
+        AND quotation_id = #{quotationId}
+        LIMIT 1
+    </select>
+
+    <!-- 查询待确认的订单列表 -->
+    <select id="selectPendingConfirm" resultType="com.crm.order.domain.entity.CrmOrder">
+        SELECT * FROM crm_order
+        WHERE deleted = 0
+        AND status = 'PENDING_CONFIRM'
+        ORDER BY created_time ASC
+    </select>
+
+    <!-- 查询生产中的订单列表 -->
+    <select id="selectProducingOrders" resultType="com.crm.order.domain.entity.CrmOrder">
+        SELECT * FROM crm_order
+        WHERE deleted = 0
+        AND status = 'PRODUCING'
+        ORDER BY required_delivery_date ASC
+    </select>
+
+    <!-- 查询即将交货的订单列表 -->
+    <select id="selectUpcomingDelivery" resultType="com.crm.order.domain.entity.CrmOrder">
+        SELECT * FROM crm_order
+        WHERE deleted = 0
+        AND required_delivery_date IS NOT NULL
+        AND required_delivery_date &lt;= DATE_ADD(CURDATE(), INTERVAL #{days} DAY)
+        AND required_delivery_date &gt;= CURDATE()
+        AND status IN ('PRODUCING', 'READY_TO_SHIP')
+        ORDER BY required_delivery_date ASC
+    </select>
+
+</mapper>

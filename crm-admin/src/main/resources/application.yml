@@ -67,18 +67,32 @@ spring:
   elasticsearch:
     uris: http://localhost:9200
 
-  # Mail配置(邮件服务)
+  # Mail配置(邮件服务) - Default SMTP settings (can be overridden by user settings in database)
   mail:
-    host: smtp.exmail.qq.com
-    port: 465
-    username: noreply@yourcompany.com
-    password: your-password
+    host: ${MAIL_HOST:smtp.exmail.qq.com}
+    port: ${MAIL_PORT:465}
+    username: ${MAIL_USERNAME:noreply@yourcompany.com}
+    password: ${MAIL_PASSWORD:your-password}
+    protocol: ${MAIL_PROTOCOL:smtp}
+    default-encoding: UTF-8
     properties:
       mail:
         smtp:
           auth: true
           ssl:
             enable: true
+            required: true
+          starttls:
+            enable: false
+          connectiontimeout: 5000
+          timeout: 10000
+          writetimeout: 10000
+        imap:
+          auth: true
+          ssl:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 10000
 
 # MyBatis Plus配置
 mybatis-plus:

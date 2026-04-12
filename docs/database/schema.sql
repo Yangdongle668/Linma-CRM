@@ -675,7 +675,7 @@ CREATE TABLE msg_template (
 
 -- 默认管理员账号 (密码: admin123 BCrypt加密)
 INSERT INTO sys_user (id, dept_id, username, nickname, password, status) VALUES
-(1, 1, 'admin', '超级管理员', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0');
+(1, 1, 'admin', '超级管理员', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '0');
 
 -- 默认部门
 INSERT INTO sys_dept (id, parent_id, ancestors, dept_name, order_num, leader) VALUES

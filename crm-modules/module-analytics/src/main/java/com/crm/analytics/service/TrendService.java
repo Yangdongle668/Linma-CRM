@@ -49,4 +49,12 @@ public interface TrendService {
      * @return 环比增长数据
      */
     Map<String, Object> getMonthOverMonthGrowth(String period);
+
+    /**
+     * 获取销售趋势数据（前端Dashboard用）
+     *
+     * @param period 周期(week/month/year)
+     * @return 销售趋势数据列表
+     */
+    List<Map<String, Object>> getSalesTrend(String period);
 }

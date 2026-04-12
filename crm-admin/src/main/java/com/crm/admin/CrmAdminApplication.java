@@ -1,7 +1,9 @@
 package com.crm.admin;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -13,6 +15,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @since 2026-04-09
  */
 @SpringBootApplication
+@ComponentScan(basePackages = {"com.crm"})
+@MapperScan("com.crm.**.mapper")
 @EnableAsync  // 启用异步支持(邮件发送等)
 @EnableScheduling  // 启用定时任务(公海池回收、自动打标等)
 public class CrmAdminApplication {

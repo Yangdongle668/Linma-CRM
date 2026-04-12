@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,15 +35,98 @@ public class ReceivableServiceImpl extends ServiceImpl<CrmReceivableMapper, CrmR
 
     @Override
     public IPage<ReceivableVO> pageReceivables(ReceivableQuery query, int pageNum, int pageSize) {
-        Page<ReceivableVO> page = new Page<>(pageNum, pageSize);
-        // TODO: 实现分页查询
-        return null;
+        Page<CrmReceivable> page = new Page<>(pageNum, pageSize);
+        
+        LambdaQueryWrapper<CrmReceivable> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CrmReceivable::getDeleted, 0);
+        
+        if (query.getReceivableNo() != null && !query.getReceivableNo().isEmpty()) {
+            wrapper.like(CrmReceivable::getReceivableNo, query.getReceivableNo());
+        }
+        if (query.getOrderId() != null) {
+            wrapper.eq(CrmReceivable::getOrderId, query.getOrderId());
+        }
+        if (query.getCustomerId() != null) {
+            wrapper.eq(CrmReceivable::getCustomerId, query.getCustomerId());
+        }
+        if (query.getStatus() != null && !query.getStatus().isEmpty()) {
+            wrapper.eq(CrmReceivable::getStatus, query.getStatus());
+        }
+        if (query.getStartDate() != null) {
+            wrapper.ge(CrmReceivable::getCreatedTime, query.getStartDate().atStartOfDay());
+        }
+        if (query.getEndDate() != null) {
+            wrapper.le(CrmReceivable::getCreatedTime, query.getEndDate().atTime(23, 59, 59));
+        }
+        
+        wrapper.orderByDesc(CrmReceivable::getCreatedTime);
+        
+        Page<CrmReceivable> receivablePage = page(page, wrapper);
+        
+        // Convert to VO page
+        Page<ReceivableVO> voPage = new Page<>(pageNum, pageSize, receivablePage.getTotal());
+        List<ReceivableVO> voList = receivablePage.getRecords().stream().map(this::convertToVO).toList();
+        voPage.setRecords(voList);
+        
+        return voPage;
+    }
+    
+    private ReceivableVO convertToVO(CrmReceivable receivable) {
+        ReceivableVO vo = new ReceivableVO();
+        vo.setId(receivable.getId());
+        vo.setReceivableNo(receivable.getReceivableNo());
+        vo.setOrderId(receivable.getOrderId());
+        vo.setCustomerId(receivable.getCustomerId());
+        vo.setAmount(receivable.getAmount());
+        vo.setCurrency(receivable.getCurrency());
+        vo.setReceivedAmount(receivable.getReceivedAmount());
+        
+        // Calculate unpaid amount
+        BigDecimal unpaidAmount = receivable.getAmount().subtract(receivable.getReceivedAmount());
+        vo.setUnpaidAmount(unpaidAmount);
+        
+        // Calculate payment progress
+        if (receivable.getAmount().compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal progress = receivable.getReceivedAmount()
+                    .divide(receivable.getAmount(), 4, BigDecimal.ROUND_HALF_UP)
+                    .multiply(new BigDecimal("100"));
+            vo.setPaymentProgress(progress);
+        } else {
+            vo.setPaymentProgress(BigDecimal.ZERO);
+        }
+        
+        vo.setDueDate(receivable.getDueDate());
+        vo.setStatus(receivable.getStatus());
+        vo.setRemark(receivable.getRemark());
+        vo.setCreatedTime(receivable.getCreatedTime());
+        
+        // Calculate aging days
+        if (receivable.getDueDate() != null) {
+            long agingDays = ChronoUnit.DAYS.between(receivable.getDueDate(), LocalDate.now());
+            vo.setAgingDays((int) agingDays);
+            
+            // Determine aging range
+            if (agingDays <= 30) {
+                vo.setAgingRange("0-30");
+            } else if (agingDays <= 60) {
+                vo.setAgingRange("31-60");
+            } else if (agingDays <= 90) {
+                vo.setAgingRange("61-90");
+            } else {
+                vo.setAgingRange("90+");
+            }
+        }
+        
+        return vo;
     }
 
     @Override
     public ReceivableVO getReceivableById(Long id) {
-        // TODO: 实现详情查询
-        return null;
+        CrmReceivable receivable = getById(id);
+        if (receivable == null) {
+            return null;
+        }
+        return convertToVO(receivable);
     }
 
     @Override
@@ -78,13 +162,15 @@ public class ReceivableServiceImpl extends ServiceImpl<CrmReceivableMapper, CrmR
     @Override
     public List<ReceivableVO> getOverdueReceivables() {
         LambdaQueryWrapper<CrmReceivable> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CrmReceivable::getStatus, "overdue")
-                .or()
-                .lt(CrmReceivable::getDueDate, LocalDate.now())
+        wrapper.eq(CrmReceivable::getDeleted, 0)
+                .and(w -> w.eq(CrmReceivable::getStatus, "overdue")
+                        .or()
+                        .lt(CrmReceivable::getDueDate, LocalDate.now()))
                 .ne(CrmReceivable::getStatus, "paid")
                 .orderByAsc(CrmReceivable::getDueDate);
-        // TODO: 转换为VO
-        return null;
+        
+        List<CrmReceivable> receivables = list(wrapper);
+        return receivables.stream().map(this::convertToVO).toList();
     }
 
     @Override

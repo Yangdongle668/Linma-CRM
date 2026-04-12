@@ -72,6 +72,11 @@ public class SysUser implements Serializable {
     private String status;
 
     /**
+     * 用户角色(admin管理员/sales业务员)
+     */
+    private String role;
+
+    /**
      * 最后登录IP
      */
     private String loginIp;

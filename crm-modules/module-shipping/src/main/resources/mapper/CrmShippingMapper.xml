@@ -2,22 +2,34 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.crm.shipping.mapper.CrmShippingMapper">
 
-    <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        s.id, s.shipping_no, s.order_id, s.order_no, s.customer_id, s.customer_name,
-        s.carrier, s.tracking_no, s.shipping_date, s.estimated_arrival_date, s.actual_arrival_date,
-        s.carton_count, s.total_volume, s.total_gross_weight, s.total_net_weight,
-        s.customs_status, s.customs_declaration_no, s.status,
-        s.port_of_loading, s.port_of_destination, s.trade_term,
-        s.remark, s.owner_id, s.department_id,
-        s.created_by, s.created_time, s.updated_by, s.updated_time
-    </sql>
-
     <!-- 分页查询发货单列表 -->
     <select id="selectShippingPage" resultType="com.crm.shipping.domain.vo.ShippingVO">
         SELECT
-            <include refid="Base_Column_List"/>
+            s.id,
+            s.shipping_no AS shippingNo,
+            s.order_id AS orderId,
+            o.order_no AS orderNo,
+            o.customer_id AS customerId,
+            c.company_name AS customerName,
+            s.carrier,
+            s.tracking_no AS trackingNo,
+            s.ship_date AS shipDate,
+            s.estimated_arrival AS estimatedArrival,
+            s.actual_arrival AS actualArrival,
+            s.package_count AS packageCount,
+            s.total_volume AS totalVolume,
+            s.total_gross_weight AS totalGrossWeight,
+            s.total_net_weight AS totalNetWeight,
+            s.status,
+            s.customs_status AS customsStatus,
+            s.tracking_data AS trackingData,
+            s.created_by AS createdBy,
+            s.created_time AS createdTime,
+            s.updated_by AS updatedBy,
+            s.updated_time AS updatedTime
         FROM crm_shipping s
+        LEFT JOIN crm_order o ON s.order_id = o.id AND o.deleted = 0
+        LEFT JOIN crm_customer c ON o.customer_id = c.id AND c.deleted = 0
         WHERE s.deleted = 0
         <if test="query.shippingNo != null and query.shippingNo != ''">
             AND s.shipping_no LIKE CONCAT('%', #{query.shippingNo}, '%')
@@ -25,38 +37,11 @@
         <if test="query.orderId != null">
             AND s.order_id = #{query.orderId}
         </if>
-        <if test="query.orderNo != null and query.orderNo != ''">
-            AND s.order_no LIKE CONCAT('%', #{query.orderNo}, '%')
-        </if>
-        <if test="query.customerId != null">
-            AND s.customer_id = #{query.customerId}
-        </if>
-        <if test="query.customerName != null and query.customerName != ''">
-            AND s.customer_name LIKE CONCAT('%', #{query.customerName}, '%')
-        </if>
-        <if test="query.carrier != null and query.carrier != ''">
-            AND s.carrier = #{query.carrier}
-        </if>
         <if test="query.trackingNo != null and query.trackingNo != ''">
             AND s.tracking_no LIKE CONCAT('%', #{query.trackingNo}, '%')
         </if>
         <if test="query.status != null and query.status != ''">
             AND s.status = #{query.status}
-        </if>
-        <if test="query.customsStatus != null and query.customsStatus != ''">
-            AND s.customs_status = #{query.customsStatus}
-        </if>
-        <if test="query.startDate != null">
-            AND s.shipping_date &gt;= #{query.startDate}
-        </if>
-        <if test="query.endDate != null">
-            AND s.shipping_date &lt;= #{query.endDate}
-        </if>
-        <if test="query.ownerId != null">
-            AND s.owner_id = #{query.ownerId}
-        </if>
-        <if test="query.departmentId != null">
-            AND s.department_id = #{query.departmentId}
         </if>
         ORDER BY s.created_time DESC
     </select>

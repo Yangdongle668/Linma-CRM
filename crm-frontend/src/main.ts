@@ -7,6 +7,7 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import App from './App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
+import { registerDirectives } from './directives'
 
 // 导入全局样式
 import './styles/index.scss'
@@ -24,6 +25,9 @@ app.use(ElementPlus, {
 })
 app.use(router)
 app.use(createPinia())
+
+// 注册自定义指令
+registerDirectives(app)
 
 // 挂载应用
 app.mount('#app')

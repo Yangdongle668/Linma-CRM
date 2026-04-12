@@ -30,7 +30,7 @@ public class RankingServiceImpl implements RankingService {
             SELECT
                 u.id as userId,
                 u.username as userName,
-                u.real_name as realName,
+                u.nickname as realName,
                 COUNT(o.id) as orderCount,
                 SUM(o.total_amount) as totalSales
             FROM crm_order o
@@ -38,7 +38,7 @@ public class RankingServiceImpl implements RankingService {
             WHERE o.deleted = 0
               AND o.status != 'cancelled'
               AND YEAR(o.order_date) = YEAR(CURDATE())
-            GROUP BY u.id, u.username, u.real_name
+            GROUP BY u.id, u.username, u.nickname
             ORDER BY totalSales DESC
             LIMIT ?
             """;

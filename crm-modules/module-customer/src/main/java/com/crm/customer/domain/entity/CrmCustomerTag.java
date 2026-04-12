@@ -23,13 +23,13 @@ public class CrmCustomerTag implements Serializable {
     /**
      * 客户ID
      */
-    @TableId(value = "customer_id", type = IdType.INPUT)
+    @TableField("customer_id")
     private Long customerId;
 
     /**
      * 标签ID
      */
-    @TableId(value = "tag_id", type = IdType.INPUT)
+    @TableField("tag_id")
     private Long tagId;
 
     /**

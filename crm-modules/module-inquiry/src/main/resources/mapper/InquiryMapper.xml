@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.inquiry.mapper.InquiryMapper">
+
+    <!-- 分页查询询盘(带关联信息) -->
+    <select id="selectInquiryPage" resultType="com.crm.inquiry.domain.vo.InquiryVO">
+        SELECT
+            i.id,
+            i.inquiry_no AS inquiryNo,
+            i.customer_id AS customerId,
+            cust.company_name AS customerName,
+            i.contact_id AS contactId,
+            cont.full_name AS contactName,
+            cont.email AS contactEmail,
+            i.source,
+            CASE i.source
+                WHEN 'alibaba' THEN '阿里巴巴国际站'
+                WHEN 'website' THEN '官网'
+                WHEN 'email' THEN '邮件'
+                WHEN 'exhibition' THEN '展会'
+                WHEN 'referral' THEN '推荐'
+                ELSE i.source
+            END AS sourceDesc,
+            i.priority,
+            CASE i.priority
+                WHEN 'HIGH' THEN '高优先级'
+                WHEN 'MEDIUM' THEN '中优先级'
+                WHEN 'LOW' THEN '低优先级'
+                ELSE i.priority
+            END AS priorityDesc,
+            i.status,
+            CASE i.status
+                WHEN 'NEW' THEN '新询盘'
+                WHEN 'PROCESSING' THEN '处理中'
+                WHEN 'QUOTED' THEN '已报价'
+                WHEN 'CONVERTED' THEN '已转化'
+                WHEN 'CLOSED' THEN '已关闭'
+                ELSE i.status
+            END AS statusDesc,
+            i.product_interest AS productInterest,
+            i.quantity,
+            i.target_price AS targetPrice,
+            i.currency,
+            i.deadline AS expectedDeliveryDate,
+            i.assigned_to AS ownerId,
+            u.nickname AS ownerName,
+            u.dept_id AS departmentId,
+            d.dept_name AS departmentName,
+            i.created_time AS createdTime,
+            i.updated_time AS updatedTime,
+            i.closed_time AS closedTime,
+            i.remark
+        FROM crm_inquiry i
+        LEFT JOIN crm_customer cust ON i.customer_id = cust.id AND cust.deleted = 0
+        LEFT JOIN crm_contact cont ON i.contact_id = cont.id AND cont.deleted = 0
+        LEFT JOIN sys_user u ON i.assigned_to = u.id
+        LEFT JOIN sys_dept d ON u.dept_id = d.id AND d.deleted = 0
+        WHERE i.deleted = 0
+        <if test="query.inquiryNo != null and query.inquiryNo != ''">
+            AND i.inquiry_no LIKE CONCAT('%', #{query.inquiryNo}, '%')
+        </if>
+        <if test="query.customerName != null and query.customerName != ''">
+            AND cust.company_name LIKE CONCAT('%', #{query.customerName}, '%')
+        </if>
+        <if test="query.contactName != null and query.contactName != ''">
+            AND cont.full_name LIKE CONCAT('%', #{query.contactName}, '%')
+        </if>
+        <if test="query.source != null and query.source != ''">
+            AND i.source = #{query.source}
+        </if>
+        <if test="query.priority != null and query.priority != ''">
+            AND i.priority = #{query.priority}
+        </if>
+        <if test="query.status != null and query.status != ''">
+            AND i.status = #{query.status}
+        </if>
+        <if test="query.ownerId != null">
+            AND i.assigned_to = #{query.ownerId}
+        </if>
+        <if test="query.departmentId != null">
+            AND u.dept_id = #{query.departmentId}
+        </if>
+        <if test="query.startTime != null">
+            AND i.created_time &gt;= #{query.startTime}
+        </if>
+        <if test="query.endTime != null">
+            AND i.created_time &lt;= #{query.endTime}
+        </if>
+        <if test="query.isConverted != null and query.isConverted == 1">
+            AND i.status = 'CONVERTED'
+        </if>
+        <if test="query.isConverted != null and query.isConverted == 0">
+            AND i.status != 'CONVERTED'
+        </if>
+        ORDER BY i.created_time DESC
+    </select>
+
+    <!-- 根据询盘号查询 -->
+    <select id="selectByInquiryNo" resultType="com.crm.inquiry.domain.entity.CrmInquiry">
+        SELECT * FROM crm_inquiry
+        WHERE deleted = 0
+        AND inquiry_no = #{inquiryNo}
+        LIMIT 1
+    </select>
+
+    <!-- 批量导出询盘 -->
+    <select id="selectInquiryForExport" resultType="com.crm.inquiry.domain.vo.InquiryVO">
+        SELECT
+            i.id,
+            i.inquiry_no AS inquiryNo,
+            cust.company_name AS customerName,
+            cont.full_name AS contactName,
+            cont.email AS contactEmail,
+            CASE i.source
+                WHEN 'alibaba' THEN '阿里巴巴国际站'
+                WHEN 'website' THEN '官网'
+                WHEN 'email' THEN '邮件'
+                WHEN 'exhibition' THEN '展会'
+                WHEN 'referral' THEN '推荐'
+                ELSE i.source
+            END AS sourceDesc,
+            CASE i.priority
+                WHEN 'HIGH' THEN '高优先级'
+                WHEN 'MEDIUM' THEN '中优先级'
+                WHEN 'LOW' THEN '低优先级'
+                ELSE i.priority
+            END AS priorityDesc,
+            i.product_interest AS productInterest,
+            i.quantity,
+            i.target_price AS targetPrice,
+            i.currency,
+            i.deadline AS expectedDeliveryDate,
+            u.nickname AS ownerName,
+            d.dept_name AS departmentName,
+            i.created_time AS createdTime,
+            i.remark
+        FROM crm_inquiry i
+        LEFT JOIN crm_customer cust ON i.customer_id = cust.id AND cust.deleted = 0
+        LEFT JOIN crm_contact cont ON i.contact_id = cont.id AND cont.deleted = 0
+        LEFT JOIN sys_user u ON i.assigned_to = u.id
+        LEFT JOIN sys_dept d ON u.dept_id = d.id AND d.deleted = 0
+        WHERE i.deleted = 0
+        <if test="query.inquiryNo != null and query.inquiryNo != ''">
+            AND i.inquiry_no LIKE CONCAT('%', #{query.inquiryNo}, '%')
+        </if>
+        <if test="query.customerName != null and query.customerName != ''">
+            AND cust.company_name LIKE CONCAT('%', #{query.customerName}, '%')
+        </if>
+        <if test="query.source != null and query.source != ''">
+            AND i.source = #{query.source}
+        </if>
+        <if test="query.status != null and query.status != ''">
+            AND i.status = #{query.status}
+        </if>
+        ORDER BY i.created_time DESC
+    </select>
+
+    <!-- 统计待处理询盘数量 -->
+    <select id="countPendingInquiries" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM crm_inquiry
+        WHERE deleted = 0
+        AND status IN ('NEW', 'PROCESSING')
+        <if test="ownerId != null">
+            AND assigned_to = #{ownerId}
+        </if>
+    </select>
+
+    <!-- 统计已转化询盘数量 -->
+    <select id="countConvertedInquiries" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM crm_inquiry
+        WHERE deleted = 0
+        AND status = 'CONVERTED'
+        <if test="ownerId != null">
+            AND assigned_to = #{ownerId}
+        </if>
+    </select>
+
+</mapper>

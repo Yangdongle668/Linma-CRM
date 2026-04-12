@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.product.mapper.ProductMapper">
+
+    <!-- 分页查询产品(带关联信息) -->
+    <select id="selectProductPage" resultType="com.crm.product.domain.vo.ProductVO">
+        SELECT
+            p.id,
+            p.sku,
+            p.product_name AS productName,
+            p.product_name_en AS productNameEn,
+            p.category_id AS categoryId,
+            c.category_name AS categoryNameCn,
+            c.category_name_en AS categoryNameEn,
+            p.description,
+            p.specification,
+            p.material,
+            p.color,
+            p.size,
+            p.weight,
+            p.length,
+            p.width,
+            p.height,
+            p.cost_price AS costPrice,
+            p.factory_price AS factoryPrice,
+            p.fob_price AS fobPrice,
+            p.cif_price AS cifPrice,
+            p.min_order_qty AS minOrderQty,
+            p.stock_qty AS stockQty,
+            p.main_image AS mainImage,
+            p.images,
+            p.video_url AS videoUrl,
+            p.status,
+            p.hs_code AS hsCode,
+            p.tax_refund_rate AS taxRefundRate,
+            p.created_by AS createdBy,
+            p.created_time AS createdTime,
+            p.updated_by AS updatedBy,
+            p.updated_time AS updatedTime,
+            p.remark
+        FROM crm_product p
+        LEFT JOIN crm_product_category c ON p.category_id = c.id AND c.deleted = 0
+        WHERE p.deleted = 0
+        <if test="query.productName != null and query.productName != ''">
+            AND (p.product_name LIKE CONCAT('%', #{query.productName}, '%')
+            OR p.product_name_en LIKE CONCAT('%', #{query.productName}, '%'))
+        </if>
+        <if test="query.sku != null and query.sku != ''">
+            AND p.sku LIKE CONCAT('%', #{query.sku}, '%')
+        </if>
+        <if test="query.categoryId != null">
+            AND p.category_id = #{query.categoryId}
+        </if>
+        <if test="query.status != null">
+            AND p.status = #{query.status}
+        </if>
+        <if test="query.hsCode != null and query.hsCode != ''">
+            AND p.hs_code = #{query.hsCode}
+        </if>
+        <if test="query.minPrice != null">
+            AND p.fob_price &gt;= #{query.minPrice}
+        </if>
+        <if test="query.maxPrice != null">
+            AND p.fob_price &lt;= #{query.maxPrice}
+        </if>
+        <if test="query.hasStock != null and query.hasStock == 1">
+            AND p.stock_qty &gt; 0
+        </if>
+        <if test="query.hasStock != null and query.hasStock == 0">
+            AND p.stock_qty = 0
+        </if>
+        ORDER BY p.created_time DESC
+    </select>
+
+    <!-- 根据产品编号查询 - using SKU as product identifier -->
+    <select id="selectByProductNo" resultType="com.crm.product.domain.entity.CrmProduct">
+        SELECT * FROM crm_product
+        WHERE deleted = 0
+        AND sku = #{productNo}
+        LIMIT 1
+    </select>
+
+    <!-- 根据SKU查询 -->
+    <select id="selectBySku" resultType="com.crm.product.domain.entity.CrmProduct">
+        SELECT * FROM crm_product
+        WHERE deleted = 0
+        AND sku = #{sku}
+        LIMIT 1
+    </select>
+
+    <!-- 批量导出产品 -->
+    <select id="selectProductForExport" resultType="com.crm.product.domain.vo.ProductVO">
+        SELECT
+            p.id,
+            p.sku,
+            p.product_name AS productName,
+            p.product_name_en AS productNameEn,
+            c.category_name AS categoryNameCn,
+            c.category_name_en AS categoryNameEn,
+            p.description,
+            p.specification,
+            p.cost_price AS costPrice,
+            p.factory_price AS factoryPrice,
+            p.fob_price AS fobPrice,
+            p.cif_price AS cifPrice,
+            p.min_order_qty AS minOrderQty,
+            p.stock_qty AS stockQty,
+            p.main_image AS mainImage,
+            p.status,
+            p.hs_code AS hsCode,
+            p.tax_refund_rate AS taxRefundRate,
+            p.created_time AS createdTime,
+            p.remark
+        FROM crm_product p
+        LEFT JOIN crm_product_category c ON p.category_id = c.id AND c.deleted = 0
+        WHERE p.deleted = 0
+        <if test="query.productName != null and query.productName != ''">
+            AND (p.product_name LIKE CONCAT('%', #{query.productName}, '%')
+            OR p.product_name_en LIKE CONCAT('%', #{query.productName}, '%'))
+        </if>
+        <if test="query.sku != null and query.sku != ''">
+            AND p.sku LIKE CONCAT('%', #{query.sku}, '%')
+        </if>
+        <if test="query.categoryId != null">
+            AND p.category_id = #{query.categoryId}
+        </if>
+        <if test="query.status != null">
+            AND p.status = #{query.status}
+        </if>
+        ORDER BY p.created_time DESC
+    </select>
+
+</mapper>

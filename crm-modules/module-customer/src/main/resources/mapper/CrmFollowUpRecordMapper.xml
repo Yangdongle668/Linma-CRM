@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.customer.mapper.CrmFollowUpRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.crm.customer.domain.entity.CrmFollowUpRecord">
+        <id column="id" property="id"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="contact_id" property="contactId"/>
+        <result column="follow_type" property="followType"/>
+        <result column="subject" property="subject"/>
+        <result column="content" property="content"/>
+        <result column="direction" property="direction"/>
+        <result column="status" property="status"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="duration_minutes" property="durationMinutes"/>
+        <result column="location" property="location"/>
+        <result column="participants_json" property="participantsJson"/>
+        <result column="outcome" property="outcome"/>
+        <result column="next_step" property="nextStep"/>
+        <result column="next_follow_date" property="nextFollowDate"/>
+        <result column="sentiment" property="sentiment"/>
+        <result column="importance" property="importance"/>
+        <result column="related_inquiry_id" property="relatedInquiryId"/>
+        <result column="related_order_id" property="relatedOrderId"/>
+        <result column="related_contract_id" property="relatedContractId"/>
+        <result column="email_message_id" property="emailMessageId"/>
+        <result column="attachments_json" property="attachmentsJson"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, customer_id, contact_id, follow_type, subject, content, direction, status,
+        start_time, end_time, duration_minutes, location, participants_json,
+        outcome, next_step, next_follow_date, sentiment, importance,
+        related_inquiry_id, related_order_id, related_contract_id, email_message_id,
+        attachments_json, created_by, created_time, updated_time, deleted
+    </sql>
+
+    <select id="selectFollowUpRecordsByCustomerId" resultType="map">
+        SELECT
+            fur.id,
+            fur.customer_id as customerId,
+            c.company_name as companyName,
+            fur.follow_type as followType,
+            fur.subject,
+            fur.content,
+            fur.direction,
+            fur.status,
+            fur.start_time as startTime,
+            fur.duration_minutes as durationMinutes,
+            fur.outcome,
+            fur.next_step as nextStep,
+            fur.next_follow_date as nextFollowDate,
+            fur.sentiment,
+            fur.importance,
+            u.real_name as creatorName,
+            fur.created_time as createdTime
+        FROM crm_follow_up_record fur
+        LEFT JOIN crm_customer c ON fur.customer_id = c.id
+        LEFT JOIN sys_user u ON fur.created_by = u.id
+        WHERE fur.customer_id = #{customerId}
+          AND fur.deleted = 0
+        ORDER BY fur.start_time DESC
+    </select>
+
+    <select id="countFollowUpsByType" resultType="map">
+        SELECT
+            follow_type as followType,
+            COUNT(*) as count
+        FROM crm_follow_up_record
+        WHERE customer_id = #{customerId}
+          AND deleted = 0
+        GROUP BY follow_type
+        ORDER BY count DESC
+    </select>
+
+    <select id="selectPendingFollowUps" resultType="map">
+        SELECT
+            fur.id,
+            fur.customer_id as customerId,
+            c.company_name as companyName,
+            fur.follow_type as followType,
+            fur.subject,
+            fur.next_follow_date as nextFollowDate,
+            fur.importance,
+            DATEDIFF(fur.next_follow_date, CURDATE()) as daysUntilDue
+        FROM crm_follow_up_record fur
+        LEFT JOIN crm_customer c ON fur.customer_id = c.id
+        WHERE fur.created_by = #{userId}
+          AND fur.status = 'planned'
+          AND fur.deleted = 0
+          AND fur.next_follow_date IS NOT NULL
+        ORDER BY fur.next_follow_date ASC
+    </select>
+
+</mapper>

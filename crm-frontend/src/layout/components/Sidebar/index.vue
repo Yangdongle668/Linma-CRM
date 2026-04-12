@@ -24,6 +24,15 @@
         <template #title>首页</template>
       </el-menu-item>
 
+      <!-- 任务管理 -->
+      <el-sub-menu index="/task">
+        <template #title>
+          <el-icon><List /></el-icon>
+          <span>任务</span>
+        </template>
+        <el-menu-item index="/task/list">任务列表</el-menu-item>
+      </el-sub-menu>
+
       <!-- 客户管理 -->
       <el-sub-menu index="/customer">
         <template #title>
@@ -94,6 +103,17 @@
         <el-menu-item index="/analytics/dashboard">数据看板</el-menu-item>
         <el-menu-item index="/analytics/funnel">销售漏斗</el-menu-item>
         <el-menu-item index="/analytics/ranking">业绩排行</el-menu-item>
+      </el-sub-menu>
+
+      <!-- 消息中心 -->
+      <el-sub-menu index="/message">
+        <template #title>
+          <el-icon><Bell /></el-icon>
+          <span>消息中心</span>
+        </template>
+        <el-menu-item index="/message/email">邮箱客户端</el-menu-item>
+        <el-menu-item index="/message/template">邮件模板</el-menu-item>
+        <el-menu-item index="/message/notification">通知中心</el-menu-item>
       </el-sub-menu>
 
       <!-- 系统设置 -->

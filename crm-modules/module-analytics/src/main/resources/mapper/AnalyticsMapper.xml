@@ -65,8 +65,8 @@
             COUNT(DISTINCT o.id) as frequency,
             SUM(o.total_amount) as monetary,
             CASE
-                WHEN DATEDIFF(CURDATE(), MAX(o.order_date)) <= 30 THEN '活跃'
-                WHEN DATEDIFF(CURDATE(), MAX(o.order_date)) <= 90 THEN '一般'
+                WHEN DATEDIFF(CURDATE(), MAX(o.order_date)) &lt;= 30 THEN '活跃'
+                WHEN DATEDIFF(CURDATE(), MAX(o.order_date)) &lt;= 90 THEN '一般'
                 ELSE '沉睡'
             END as customerStatus
         FROM crm_customer c

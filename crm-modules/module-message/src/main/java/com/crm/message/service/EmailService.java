@@ -44,4 +44,58 @@ public interface EmailService {
      * @return 发送结果Map,key为邮箱,value为是否成功
      */
     java.util.Map<String, Boolean> batchSendEmail(java.util.List<String> toEmails, String subject, String content);
+
+    /**
+     * 获取收件箱邮件列表
+     *
+     * @param userId 用户ID
+     * @param folder 文件夹类型
+     * @param pageNum 页码
+     * @param pageSize 每页数量
+     * @return 邮件列表
+     */
+    java.util.List<java.util.Map<String, Object>> getInboxEmails(Long userId, String folder, Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取发件箱邮件列表
+     *
+     * @param userId 用户ID
+     * @param pageNum 页码
+     * @param pageSize 每页数量
+     * @return 邮件列表
+     */
+    java.util.List<java.util.Map<String, Object>> getSentEmails(Long userId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 标记邮件为已读
+     *
+     * @param emailId 邮件ID
+     * @param userId 用户ID
+     */
+    void markAsRead(Long emailId, Long userId);
+
+    /**
+     * 切换邮件星标状态
+     *
+     * @param emailId 邮件ID
+     * @param userId 用户ID
+     */
+    void toggleStar(Long emailId, Long userId);
+
+    /**
+     * 删除邮件
+     *
+     * @param emailId 邮件ID
+     * @param userId 用户ID
+     */
+    void deleteEmail(Long emailId, Long userId);
+
+    /**
+     * 移动邮件到文件夹
+     *
+     * @param emailId 邮件ID
+     * @param folder 目标文件夹
+     * @param userId 用户ID
+     */
+    void moveToFolder(Long emailId, String folder, Long userId);
 }

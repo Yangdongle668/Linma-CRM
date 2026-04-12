@@ -23,7 +23,7 @@ public class Result<T> implements Serializable {
     /**
      * 消息
      */
-    private String message;
+    private String msg;
 
     /**
      * 数据
@@ -39,9 +39,9 @@ public class Result<T> implements Serializable {
         this.timestamp = System.currentTimeMillis();
     }
 
-    public Result(Integer code, String message, T data) {
+    public Result(Integer code, String msg, T data) {
         this.code = code;
-        this.message = message;
+        this.msg = msg;
         this.data = data;
         this.timestamp = System.currentTimeMillis();
     }
@@ -63,22 +63,22 @@ public class Result<T> implements Serializable {
     /**
      * 成功响应（自定义消息和数据）
      */
-    public static <T> Result<T> success(String message, T data) {
-        return new Result<>(200, message, data);
+    public static <T> Result<T> success(String msg, T data) {
+        return new Result<>(200, msg, data);
     }
 
     /**
      * 失败响应
      */
-    public static <T> Result<T> error(String message) {
-        return new Result<>(500, message, null);
+    public static <T> Result<T> error(String msg) {
+        return new Result<>(500, msg, null);
     }
 
     /**
      * 失败响应（自定义状态码）
      */
-    public static <T> Result<T> error(Integer code, String message) {
-        return new Result<>(code, message, null);
+    public static <T> Result<T> error(Integer code, String msg) {
+        return new Result<>(code, msg, null);
     }
 
     /**

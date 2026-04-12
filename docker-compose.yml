@@ -11,7 +11,10 @@ services:
       - "3306:3306"
     volumes:
       - ./data/mysql:/var/lib/mysql
-      - ./docs/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./docs/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./docs/database/email_settings_migration.sql:/docker-entrypoint-initdb.d/02-email-settings.sql
+      - ./docs/database/enhanced_customer_schema.sql:/docker-entrypoint-initdb.d/03-enhanced-customer.sql
+      - ./docs/database/permission_and_highsea_migration.sql:/docker-entrypoint-initdb.d/04-permission-highsea.sql
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
@@ -88,6 +91,10 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       TZ: Asia/Shanghai
+      DB_PASSWORD: root123456
+      REDIS_PASSWORD: redis123456
+      RABBITMQ_PASSWORD: admin123456
+      JWT_SECRET: foreign-trade-crm-secret-key-change-in-production-2026
     ports:
       - "8080:8080"
     volumes:

@@ -55,4 +55,11 @@ public interface CustomerAnalyticsService {
      * @return 流失预警客户列表
      */
     List<Map<String, Object>> getChurnWarningCustomers(Integer days);
+
+    /**
+     * 获取客户分析汇总数据
+     *
+     * @return 客户分析汇总
+     */
+    Map<String, Object> getCustomerSummary();
 }

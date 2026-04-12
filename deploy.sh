@@ -88,6 +88,34 @@ create_directories() {
     print_success "Directories created!"
 }
 
+# Verify database migration files exist
+verify_database_files() {
+    print_info "Verifying database migration files..."
+    
+    local db_files=(
+        "docs/database/schema.sql"
+        "docs/database/email_settings_migration.sql"
+        "docs/database/enhanced_customer_schema.sql"
+    )
+    
+    local all_exist=true
+    for file in "${db_files[@]}"; do
+        if [ -f "$file" ]; then
+            print_success "✓ Found: $file"
+        else
+            print_error "✗ Missing: $file"
+            all_exist=false
+        fi
+    done
+    
+    if [ "$all_exist" = false ]; then
+        print_error "Some database migration files are missing!"
+        exit 1
+    fi
+    
+    print_success "All database migration files verified!"
+}
+
 # Stop existing containers
 stop_existing() {
     print_info "Stopping existing containers..."
@@ -98,7 +126,7 @@ stop_existing() {
 # Pull latest images (optional)
 pull_images() {
     print_info "Pulling latest Docker images..."
-    docker-compose pull || print_warning "Some images may not be available in remote registry"
+    docker_compose pull || print_warning "Some images may not be available in remote registry"
 }
 
 # Pull latest code from GitHub
@@ -150,8 +178,19 @@ wait_for_database() {
     sleep 30
 
     # Check if MySQL is ready
-    if docker-compose exec -T mysql mysqladmin ping -h localhost --silent 2>/dev/null; then
+    if docker_compose exec -T mysql mysqladmin ping -h localhost --silent 2>/dev/null; then
         print_success "Database is ready!"
+        
+        # Verify all database migration files were executed
+        print_info "Verifying database migrations..."
+        local migrations=("schema.sql" "email_settings_migration.sql" "enhanced_customer_schema.sql")
+        for migration in "${migrations[@]}"; do
+            if docker_compose exec -T mysql mysql -uroot -proot123456 crm_db -e "SELECT 'Migration $migration executed successfully';" 2>/dev/null; then
+                print_success "✓ Database schema verified: $migration"
+            else
+                print_warning "⚠ Migration may not have executed: $migration"
+            fi
+        done
     else
         print_warning "Database may still be initializing. Please check logs."
     fi
@@ -174,7 +213,7 @@ show_access_info() {
     echo ""
     echo -e "${GREEN}Access URLs / 访问地址:${NC}"
     echo "  📊 Swagger Docs:    http://localhost:8080/api/doc.html"
-    echo "  🌐 Frontend:        http://localhost:3000 (after frontend deployment)"
+    echo "  🌐 Frontend:        http://localhost:80 (after frontend deployment)"
     echo "  💾 MinIO Console:   http://localhost:9001"
     echo "  📨 RabbitMQ:        http://localhost:15672"
     echo "  🗄️  MySQL:           localhost:3306"
@@ -187,9 +226,9 @@ show_access_info() {
     echo -e "${YELLOW}⚠️  IMPORTANT: Please change the password after first login!${NC}"
     echo ""
     echo -e "${BLUE}Useful Commands / 常用命令:${NC}"
-    echo "  View logs:     docker-compose logs -f backend"
-    echo "  Stop services: docker-compose down"
-    echo "  Restart:       docker-compose restart"
+    echo "  View logs:     docker_compose logs -f backend"
+    echo "  Stop services: docker_compose down"
+    echo "  Restart:       docker_compose restart"
     echo ""
 }
 
@@ -217,19 +256,22 @@ main() {
     # Step 3: Create directories
     create_directories
 
-    # Step 4: Stop existing containers
+    # Step 4: Verify database migration files
+    verify_database_files
+
+    # Step 5: Stop existing containers
     stop_existing
 
-    # Step 5: Pull images (optional, comment out if not needed)
+    # Step 6: Pull images (optional, comment out if not needed)
     # pull_images
 
-    # Step 6: Start services
+    # Step 7: Start services
     start_services
 
-    # Step 6: Wait for database
+    # Step 8: Wait for database
     wait_for_database
 
-    # Step 7: Show status
+    # Step 9: Show status
     show_status
 
     # Step 8: Show access info

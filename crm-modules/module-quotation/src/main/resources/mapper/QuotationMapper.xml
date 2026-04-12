@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.quotation.mapper.CrmQuotationMapper">
+
+    <!-- 分页查询报价单列表(支持高级搜索) -->
+    <select id="selectQuotationPage" resultType="com.crm.quotation.domain.entity.CrmQuotation">
+        SELECT * FROM crm_quotation
+        WHERE 1=1
+        <if test="customerId != null">
+            AND customer_id = #{customerId}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        <if test="quotationNo != null and quotationNo != ''">
+            AND quotation_no LIKE CONCAT('%', #{quotationNo}, '%')
+        </if>
+        <if test="startDate != null">
+            AND created_time &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND created_time &lt;= #{endDate}
+        </if>
+        <if test="ownerId != null">
+            AND sales_id = #{ownerId}
+        </if>
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据客户ID查询报价单列表 -->
+    <select id="selectByCustomerId" resultType="com.crm.quotation.domain.entity.CrmQuotation">
+        SELECT * FROM crm_quotation
+        WHERE customer_id = #{customerId}
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据询盘ID查询报价单列表 -->
+    <select id="selectByInquiryId" resultType="com.crm.quotation.domain.entity.CrmQuotation">
+        SELECT * FROM crm_quotation
+        WHERE inquiry_id = #{inquiryId}
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 查询待审批的报价单列表 -->
+    <select id="selectPendingApproval" resultType="com.crm.quotation.domain.entity.CrmQuotation">
+        SELECT * FROM crm_quotation
+        WHERE status = 2
+        ORDER BY created_time ASC
+    </select>
+
+    <!-- 查询即将过期的报价单列表 -->
+    <select id="selectExpiringSoon" resultType="com.crm.quotation.domain.entity.CrmQuotation">
+        SELECT * FROM crm_quotation
+        WHERE valid_until IS NOT NULL
+        AND valid_until &lt;= DATE_ADD(CURDATE(), INTERVAL #{days} DAY)
+        AND valid_until &gt;= CURDATE()
+        AND status = 1
+        ORDER BY valid_until ASC
+    </select>
+
+</mapper>

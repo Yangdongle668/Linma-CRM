@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.contract.mapper.ContractMapper">
+
+    <!-- 分页查询合同(带关联信息) -->
+    <select id="selectContractPage" resultType="com.crm.contract.domain.vo.ContractVO">
+        SELECT
+            c.id,
+            c.contract_no AS contractNo,
+            c.order_id AS orderId,
+            o.order_no AS orderNo,
+            c.customer_id AS customerId,
+            cust.company_name AS customerName,
+            c.contract_type AS contractType,
+            CASE c.contract_type
+                WHEN 'SALES' THEN '销售合同'
+                WHEN 'PURCHASE' THEN '采购合同'
+                WHEN 'AGENCY' THEN '代理合同'
+                WHEN 'NDA' THEN '保密协议'
+                ELSE c.contract_type
+            END AS contractTypeDesc,
+            c.contract_amount AS contractAmount,
+            c.currency,
+            c.sign_date AS signDate,
+            c.start_date AS startDate,
+            c.end_date AS endDate,
+            c.status,
+            CASE c.status
+                WHEN 'DRAFT' THEN '草稿'
+                WHEN 'PENDING_APPROVAL' THEN '待审批'
+                WHEN 'APPROVED' THEN '已审批'
+                WHEN 'REJECTED' THEN '已拒绝'
+                WHEN 'ARCHIVED' THEN '已归档'
+                WHEN 'CANCELLED' THEN '已取消'
+                ELSE c.status
+            END AS statusDesc,
+            c.pdf_url AS pdfUrl,
+            c.signed_url AS signedUrl,
+            c.sales_id AS salesId,
+            u.nickname AS salesName,
+            c.approved_by AS approvedBy,
+            approver.nickname AS approverName,
+            c.approved_time AS approvedTime,
+            c.created_by AS createdBy,
+            creator.nickname AS createdByName,
+            c.created_time AS createdTime,
+            c.updated_time AS updatedTime,
+            c.remark
+        FROM crm_contract c
+        LEFT JOIN crm_customer cust ON c.customer_id = cust.id AND cust.deleted = 0
+        LEFT JOIN crm_order o ON c.order_id = o.id AND o.deleted = 0
+        LEFT JOIN sys_user u ON c.sales_id = u.id
+        LEFT JOIN sys_user approver ON c.approved_by = approver.id
+        LEFT JOIN sys_user creator ON c.created_by = creator.id
+        WHERE c.deleted = 0
+        <if test="query.contractNo != null and query.contractNo != ''">
+            AND c.contract_no LIKE CONCAT('%', #{query.contractNo}, '%')
+        </if>
+        <if test="query.contractType != null and query.contractType != ''">
+            AND c.contract_type = #{query.contractType}
+        </if>
+        <if test="query.customerName != null and query.customerName != ''">
+            AND cust.company_name LIKE CONCAT('%', #{query.customerName}, '%')
+        </if>
+        <if test="query.status != null and query.status != ''">
+            AND c.status = #{query.status}
+        </if>
+        <if test="query.ownerId != null">
+            AND c.sales_id = #{query.ownerId}
+        </if>
+        <if test="query.startDate != null">
+            AND c.created_time &gt;= #{query.startDate}
+        </if>
+        <if test="query.endDate != null">
+            AND c.created_time &lt;= #{query.endDate}
+        </if>
+        <if test="query.minAmount != null">
+            AND c.contract_amount &gt;= #{query.minAmount}
+        </if>
+        <if test="query.maxAmount != null">
+            AND c.contract_amount &lt;= #{query.maxAmount}
+        </if>
+        ORDER BY c.created_time DESC
+    </select>
+
+    <!-- 根据合同号查询 -->
+    <select id="selectByContractNo" resultType="com.crm.contract.domain.entity.CrmContract">
+        SELECT * FROM crm_contract
+        WHERE deleted = 0
+        AND contract_no = #{contractNo}
+        LIMIT 1
+    </select>
+
+    <!-- 批量导出合同 -->
+    <select id="selectContractForExport" resultType="com.crm.contract.domain.vo.ContractVO">
+        SELECT
+            c.id,
+            c.contract_no AS contractNo,
+            o.order_no AS orderNo,
+            cust.company_name AS customerName,
+            CASE c.contract_type
+                WHEN 'SALES' THEN '销售合同'
+                WHEN 'PURCHASE' THEN '采购合同'
+                WHEN 'AGENCY' THEN '代理合同'
+                WHEN 'NDA' THEN '保密协议'
+                ELSE c.contract_type
+            END AS contractTypeDesc,
+            c.contract_amount AS contractAmount,
+            c.currency,
+            c.sign_date AS signDate,
+            c.start_date AS startDate,
+            c.end_date AS endDate,
+            CASE c.status
+                WHEN 'DRAFT' THEN '草稿'
+                WHEN 'PENDING_APPROVAL' THEN '待审批'
+                WHEN 'APPROVED' THEN '已审批'
+                WHEN 'REJECTED' THEN '已拒绝'
+                WHEN 'ARCHIVED' THEN '已归档'
+                WHEN 'CANCELLED' THEN '已取消'
+                ELSE c.status
+            END AS statusDesc,
+            u.nickname AS salesName,
+            approver.nickname AS approverName,
+            c.approved_time AS approvedTime,
+            c.created_time AS createdTime,
+            c.remark
+        FROM crm_contract c
+        LEFT JOIN crm_customer cust ON c.customer_id = cust.id AND cust.deleted = 0
+        LEFT JOIN crm_order o ON c.order_id = o.id AND o.deleted = 0
+        LEFT JOIN sys_user u ON c.sales_id = u.id
+        LEFT JOIN sys_user approver ON c.approved_by = approver.id
+        WHERE c.deleted = 0
+        <if test="query.contractNo != null and query.contractNo != ''">
+            AND c.contract_no LIKE CONCAT('%', #{query.contractNo}, '%')
+        </if>
+        <if test="query.contractType != null and query.contractType != ''">
+            AND c.contract_type = #{query.contractType}
+        </if>
+        <if test="query.customerName != null and query.customerName != ''">
+            AND cust.company_name LIKE CONCAT('%', #{query.customerName}, '%')
+        </if>
+        <if test="query.status != null and query.status != ''">
+            AND c.status = #{query.status}
+        </if>
+        ORDER BY c.created_time DESC
+    </select>
+
+    <!-- 统计待审批合同数量 -->
+    <select id="countPendingApproval" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM crm_contract
+        WHERE deleted = 0
+        AND status = 'PENDING_APPROVAL'
+    </select>
+
+    <!-- 统计本月签订金额 -->
+    <select id="sumMonthlyContractAmount" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(contract_amount), 0) FROM crm_contract
+        WHERE deleted = 0
+        AND status = 'APPROVED'
+        AND MONTH(sign_date) = MONTH(CURRENT_DATE())
+        AND YEAR(sign_date) = YEAR(CURRENT_DATE())
+    </select>
+
+</mapper>

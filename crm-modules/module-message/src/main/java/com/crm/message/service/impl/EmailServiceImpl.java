@@ -1,8 +1,11 @@
 package com.crm.message.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.crm.message.domain.dto.EmailSendDTO;
+import com.crm.message.domain.entity.MsgEmail;
 import com.crm.message.domain.entity.MsgEmailLog;
 import com.crm.message.mapper.MsgEmailLogMapper;
+import com.crm.message.mapper.MsgEmailMapper;
 import com.crm.message.service.EmailService;
 import com.crm.message.service.TemplateService;
 import jakarta.mail.MessagingException;
@@ -16,9 +19,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 邮件服务实现类
@@ -34,6 +37,7 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
     private final TemplateService templateService;
     private final MsgEmailLogMapper emailLogMapper;
+    private final MsgEmailMapper emailMapper;
 
     // TODO: 从配置文件读取发件人邮箱
     private static final String FROM_EMAIL = "noreply@crm-system.com";
@@ -147,5 +151,113 @@ public class EmailServiceImpl implements EmailService {
         log.setSendTime(LocalDateTime.now());
 
         emailLogMapper.insert(log);
+    }
+
+    @Override
+    public List<Map<String, Object>> getInboxEmails(Long userId, String folder, Integer pageNum, Integer pageSize) {
+        log.info("获取收件箱邮件 - 用户ID:{}, 文件夹:{}", userId, folder);
+
+        if (folder == null || folder.isEmpty()) {
+            folder = "inbox";
+        }
+
+        LambdaQueryWrapper<MsgEmail> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(MsgEmail::getUserId, userId)
+                .eq(MsgEmail::getDirection, "inbound")
+                .eq(MsgEmail::getFolder, folder)
+                .orderByDesc(MsgEmail::getMessageTime);
+
+        // Pagination
+        int start = (pageNum - 1) * pageSize;
+        wrapper.last("LIMIT " + start + ", " + pageSize);
+
+        List<MsgEmail> emails = emailMapper.selectList(wrapper);
+        return emails.stream().map(this::convertToMap).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Map<String, Object>> getSentEmails(Long userId, Integer pageNum, Integer pageSize) {
+        log.info("获取发件箱邮件 - 用户ID:{}", userId);
+
+        LambdaQueryWrapper<MsgEmail> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(MsgEmail::getUserId, userId)
+                .eq(MsgEmail::getDirection, "outbound")
+                .eq(MsgEmail::getFolder, "sent")
+                .orderByDesc(MsgEmail::getMessageTime);
+
+        // Pagination
+        int start = (pageNum - 1) * pageSize;
+        wrapper.last("LIMIT " + start + ", " + pageSize);
+
+        List<MsgEmail> emails = emailMapper.selectList(wrapper);
+        return emails.stream().map(this::convertToMap).collect(Collectors.toList());
+    }
+
+    @Override
+    public void markAsRead(Long emailId, Long userId) {
+        log.info("标记邮件为已读 - 邮件ID:{}", emailId);
+        
+        MsgEmail email = emailMapper.selectById(emailId);
+        if (email != null && email.getUserId().equals(userId)) {
+            email.setIsRead(true);
+            emailMapper.updateById(email);
+        }
+    }
+
+    @Override
+    public void toggleStar(Long emailId, Long userId) {
+        log.info("切换邮件星标 - 邮件ID:{}", emailId);
+        
+        MsgEmail email = emailMapper.selectById(emailId);
+        if (email != null && email.getUserId().equals(userId)) {
+            email.setIsStarred(!Boolean.TRUE.equals(email.getIsStarred()));
+            emailMapper.updateById(email);
+        }
+    }
+
+    @Override
+    public void deleteEmail(Long emailId, Long userId) {
+        log.info("删除邮件 - 邮件ID:{}", emailId);
+        
+        MsgEmail email = emailMapper.selectById(emailId);
+        if (email != null && email.getUserId().equals(userId)) {
+            email.setDeleted(1);
+            emailMapper.updateById(email);
+        }
+    }
+
+    @Override
+    public void moveToFolder(Long emailId, String folder, Long userId) {
+        log.info("移动邮件到文件夹 - 邮件ID:{}, 文件夹:{}", emailId, folder);
+        
+        MsgEmail email = emailMapper.selectById(emailId);
+        if (email != null && email.getUserId().equals(userId)) {
+            email.setFolder(folder);
+            emailMapper.updateById(email);
+        }
+    }
+
+    /**
+     * 将邮件实体转换为Map
+     */
+    private Map<String, Object> convertToMap(MsgEmail email) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", email.getId());
+        map.put("from", email.getFromEmail());
+        map.put("fromName", email.getFromName());
+        map.put("to", email.getToEmail());
+        map.put("subject", email.getSubject() != null ? email.getSubject() : "(无主题)");
+        map.put("preview", email.getPreview());
+        map.put("content", email.getContent());
+        map.put("date", email.getMessageTime() != null 
+                ? email.getMessageTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) 
+                : LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        map.put("read", Boolean.TRUE.equals(email.getIsRead()));
+        map.put("starred", Boolean.TRUE.equals(email.getIsStarred()));
+        map.put("hasAttachment", Boolean.TRUE.equals(email.getHasAttachment()));
+        map.put("attachments", email.getAttachments());
+        map.put("folder", email.getFolder());
+        map.put("direction", email.getDirection());
+        return map;
     }
 }

@@ -44,6 +44,17 @@ public class CustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCusto
     public IPage<CustomerVO> pageCustomers(CustomerQuery query, int pageNum, int pageSize) {
         Page<CrmCustomer> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<CrmCustomer> wrapper = buildQueryWrapper(query);
+        
+        // 权限控制：如果不是管理员，只能查看自己的客户或非公海客户
+        if (query.getCurrentUserId() != null && !"admin".equals(query.getCurrentUserRole())) {
+            wrapper.eq(CrmCustomer::getOwnerId, query.getCurrentUserId());
+            wrapper.eq(CrmCustomer::getIsHighSea, 0);
+        } else if (query.getOnlyMyCustomers() != null && query.getOnlyMyCustomers()) {
+            // 如果指定只查看我的客户
+            wrapper.eq(CrmCustomer::getOwnerId, query.getCurrentUserId());
+            wrapper.eq(CrmCustomer::getIsHighSea, 0);
+        }
+        
         wrapper.orderByDesc(CrmCustomer::getCreatedTime);
         
         IPage<CrmCustomer> customerPage = this.page(page, wrapper);
@@ -158,7 +169,10 @@ public class CustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCusto
     public IPage<CustomerVO> getHighSeaCustomers(int pageNum, int pageSize) {
         Page<CrmCustomer> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<CrmCustomer> wrapper = new LambdaQueryWrapper<>();
-        wrapper.isNull(CrmCustomer::getOwnerId)
+        // 查询公海客户：is_high_sea = 1 或者 owner_id 为空
+        wrapper.and(w -> w.eq(CrmCustomer::getIsHighSea, 1)
+                          .or()
+                          .isNull(CrmCustomer::getOwnerId))
                .eq(CrmCustomer::getStatus, 1)
                .orderByDesc(CrmCustomer::getCreatedTime);
         
@@ -176,7 +190,7 @@ public class CustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCusto
         
         // 检查是否都是公海池客户
         for (CrmCustomer customer : customers) {
-            if (customer.getOwnerId() != null) {
+            if (customer.getOwnerId() != null && customer.getIsHighSea() != null && customer.getIsHighSea() == 0) {
                 throw new RuntimeException("客户[" + customer.getCompanyName() + "]已被领取");
             }
         }
@@ -184,9 +198,10 @@ public class CustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCusto
         // TODO: 从SecurityContext获取当前用户ID
         Long currentUserId = 1L;
         
-        // 批量更新负责人
+        // 批量更新负责人，取消公海标记
         for (CrmCustomer customer : customers) {
             customer.setOwnerId(currentUserId);
+            customer.setIsHighSea(0);
             customer.setRemark(StrUtil.isNotBlank(dto.getRemark()) 
                     ? customer.getRemark() + " | " + dto.getRemark() 
                     : customer.getRemark());
@@ -203,8 +218,9 @@ public class CustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCusto
             return false;
         }
         
-        // 清空负责人
+        // 设置公海标记，清空负责人
         for (CrmCustomer customer : customers) {
+            customer.setIsHighSea(1);
             customer.setOwnerId(null);
         }
         
@@ -215,21 +231,33 @@ public class CustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCusto
     @Transactional(rollbackFor = Exception.class)
     public int autoRecycleToHighSea(Integer days) {
         if (days == null || days <= 0) {
-            days = 30; // 默认30天
+            days = 7; // 默认7天未跟进则回收到公海
         }
         
-        List<CrmCustomer> recycleCustomers = customerMapper.selectRecycleCustomers(days);
+        LocalDateTime thresholdTime = LocalDateTime.now().minusDays(days);
+        
+        // 查询超过指定天数未跟进的客户（排除已在公海的）
+        LambdaQueryWrapper<CrmCustomer> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CrmCustomer::getIsHighSea, 0)
+               .isNotNull(CrmCustomer::getOwnerId)
+               .ne(CrmCustomer::getOwnerId, 0)
+               .and(w -> w.lt(CrmCustomer::getLastFollowTime, thresholdTime)
+                          .or()
+                          .isNull(CrmCustomer::getLastFollowTime));
+        
+        List<CrmCustomer> recycleCustomers = this.list(wrapper);
         if (recycleCustomers.isEmpty()) {
             return 0;
         }
         
-        // 清空负责人，释放到公海池
+        // 设置公海标记，清空负责人
         for (CrmCustomer customer : recycleCustomers) {
+            customer.setIsHighSea(1);
             customer.setOwnerId(null);
         }
         
         this.updateBatchById(recycleCustomers);
-        log.info("自动回收{}个客户到公海池", recycleCustomers.size());
+        log.info("自动回收{}个客户到公海池（超过{}天未跟进）", recycleCustomers.size(), days);
         
         return recycleCustomers.size();
     }

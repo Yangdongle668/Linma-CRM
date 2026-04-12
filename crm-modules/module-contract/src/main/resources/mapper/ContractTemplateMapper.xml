@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.contract.mapper.ContractTemplateMapper">
+
+    <!-- 分页查询模板 -->
+    <select id="selectTemplatePage" resultType="com.crm.contract.domain.vo.ContractTemplateVO">
+        SELECT
+            t.id,
+            t.template_name AS templateName,
+            t.template_code AS templateCode,
+            t.contract_type AS contractType,
+            CASE t.contract_type
+                WHEN 'sales' THEN '销售合同'
+                WHEN 'purchase' THEN '采购合同'
+                WHEN 'agency' THEN '代理合同'
+                WHEN 'nda' THEN '保密协议'
+                ELSE t.contract_type
+            END AS contractTypeDesc,
+            t.template_content AS templateContent,
+            t.language,
+            CASE t.language
+                WHEN 'zh' THEN '中文'
+                WHEN 'en' THEN '英文'
+                ELSE t.language
+            END AS languageDesc,
+            t.version,
+            t.is_default AS isDefault,
+            t.status,
+            CASE t.status
+                WHEN '1' THEN '启用'
+                WHEN '0' THEN '禁用'
+                ELSE t.status
+            END AS statusDesc,
+            t.description,
+            t.created_by AS createdBy,
+            u.nickname AS createdByName,
+            t.created_time AS createdTime,
+            t.updated_time AS updatedTime
+        FROM crm_contract_template t
+        LEFT JOIN sys_user u ON t.created_by = u.id
+        WHERE t.deleted = 0
+        <if test="query.templateName != null and query.templateName != ''">
+            AND t.template_name LIKE CONCAT('%', #{query.templateName}, '%')
+        </if>
+        <if test="query.templateCode != null and query.templateCode != ''">
+            AND t.template_code LIKE CONCAT('%', #{query.templateCode}, '%')
+        </if>
+        <if test="query.contractType != null and query.contractType != ''">
+            AND t.contract_type = #{query.contractType}
+        </if>
+        <if test="query.language != null and query.language != ''">
+            AND t.language = #{query.language}
+        </if>
+        <if test="query.status != null">
+            AND t.status = #{query.status}
+        </if>
+        ORDER BY t.created_time DESC
+    </select>
+
+    <!-- 根据模板编码查询 -->
+    <select id="selectByTemplateCode" resultType="com.crm.contract.domain.entity.CrmContractTemplate">
+        SELECT * FROM crm_contract_template
+        WHERE deleted = 0
+        AND template_code = #{templateCode}
+        LIMIT 1
+    </select>
+
+    <!-- 查询指定类型的默认模板 -->
+    <select id="selectDefaultTemplate" resultType="com.crm.contract.domain.entity.CrmContractTemplate">
+        SELECT * FROM crm_contract_template
+        WHERE deleted = 0
+        AND contract_type = #{contractType}
+        AND language = #{language}
+        AND is_default = 1
+        AND status = '1'
+        ORDER BY version DESC
+        LIMIT 1
+    </select>
+
+    <!-- 查询模板列表 -->
+    <select id="selectTemplateList" resultType="com.crm.contract.domain.vo.ContractTemplateVO">
+        SELECT
+            t.id,
+            t.template_name AS templateName,
+            t.template_code AS templateCode,
+            t.contract_type AS contractType,
+            CASE t.contract_type
+                WHEN 'sales' THEN '销售合同'
+                WHEN 'purchase' THEN '采购合同'
+                WHEN 'agency' THEN '代理合同'
+                WHEN 'nda' THEN '保密协议'
+                ELSE t.contract_type
+            END AS contractTypeDesc,
+            t.language,
+            CASE t.language
+                WHEN 'zh' THEN '中文'
+                WHEN 'en' THEN '英文'
+                ELSE t.language
+            END AS languageDesc,
+            t.version,
+            t.is_default AS isDefault,
+            t.status,
+            CASE t.status
+                WHEN '1' THEN '启用'
+                WHEN '0' THEN '禁用'
+                ELSE t.status
+            END AS statusDesc,
+            t.description,
+            t.created_by AS createdBy,
+            u.nickname AS createdByName,
+            t.created_time AS createdTime,
+            t.updated_time AS updatedTime
+        FROM crm_contract_template t
+        LEFT JOIN sys_user u ON t.created_by = u.id
+        WHERE t.deleted = 0
+        <if test="query.templateName != null and query.templateName != ''">
+            AND t.template_name LIKE CONCAT('%', #{query.templateName}, '%')
+        </if>
+        <if test="query.contractType != null and query.contractType != ''">
+            AND t.contract_type = #{query.contractType}
+        </if>
+        <if test="query.language != null and query.language != ''">
+            AND t.language = #{query.language}
+        </if>
+        <if test="query.status != null">
+            AND t.status = #{query.status}
+        </if>
+        ORDER BY t.created_time DESC
+    </select>
+
+</mapper>

@@ -39,8 +39,9 @@ public class CrmReceivable implements Serializable {
     private Long orderId;
 
     /**
-     * 订单号(冗余字段)
+     * 订单号(冗余字段 - 不存储在数据库中)
      */
+    @TableField(exist = false)
     private String orderNo;
 
     /**
@@ -49,8 +50,9 @@ public class CrmReceivable implements Serializable {
     private Long customerId;
 
     /**
-     * 客户名称(冗余字段)
+     * 客户名称(冗余字段 - 不存储在数据库中)
      */
+    @TableField(exist = false)
     private String customerName;
 
     /**
@@ -69,18 +71,21 @@ public class CrmReceivable implements Serializable {
     private BigDecimal receivedAmount;
 
     /**
-     * 未收金额
+     * 未收金额(计算字段)
      */
+    @TableField(exist = false)
     private BigDecimal unpaidAmount;
 
     /**
-     * 收款进度(%)
+     * 收款进度(%)(计算字段)
      */
+    @TableField(exist = false)
     private BigDecimal paymentProgress;
 
     /**
-     * 应收日期
+     * 应收日期(计算字段)
      */
+    @TableField(exist = false)
     private LocalDate receivableDate;
 
     /**
@@ -89,13 +94,15 @@ public class CrmReceivable implements Serializable {
     private LocalDate dueDate;
 
     /**
-     * 账龄天数
+     * 账龄天数(计算字段)
      */
+    @TableField(exist = false)
     private Integer agingDays;
 
     /**
-     * 账龄区间(0-30/31-60/61-90/90+)
+     * 账龄区间(0-30/31-60/61-90/90+)(计算字段)
      */
+    @TableField(exist = false)
     private String agingRange;
 
     /**
@@ -106,6 +113,7 @@ public class CrmReceivable implements Serializable {
     /**
      * 付款方式(T/T,L/C等)
      */
+    @TableField(exist = false)
     private String paymentTerms;
 
     /**
@@ -116,11 +124,13 @@ public class CrmReceivable implements Serializable {
     /**
      * 负责人ID
      */
+    @TableField(exist = false)
     private Long ownerId;
 
     /**
      * 所属部门ID
      */
+    @TableField(exist = false)
     private Long departmentId;
 
     /**

@@ -39,8 +39,9 @@ public class CrmPayable implements Serializable {
     private Long orderId;
 
     /**
-     * 订单号(冗余字段)
+     * 订单号(冗余字段 - 不存储在数据库中)
      */
+    @TableField(exist = false)
     private String orderNo;
 
     /**
@@ -49,8 +50,9 @@ public class CrmPayable implements Serializable {
     private Long supplierId;
 
     /**
-     * 供应商名称
+     * 供应商名称(不存储在数据库中)
      */
+    @TableField(exist = false)
     private String supplierName;
 
     /**
@@ -69,18 +71,21 @@ public class CrmPayable implements Serializable {
     private BigDecimal paidAmount;
 
     /**
-     * 未付金额
+     * 未付金额(计算字段)
      */
+    @TableField(exist = false)
     private BigDecimal unpaidAmount;
 
     /**
-     * 付款进度(%)
+     * 付款进度(%)(计算字段)
      */
+    @TableField(exist = false)
     private BigDecimal paymentProgress;
 
     /**
-     * 应付日期
+     * 应付日期(计算字段)
      */
+    @TableField(exist = false)
     private LocalDate payableDate;
 
     /**
@@ -96,6 +101,7 @@ public class CrmPayable implements Serializable {
     /**
      * 付款方式(T/T,L/C等)
      */
+    @TableField(exist = false)
     private String paymentTerms;
 
     /**
@@ -126,11 +132,13 @@ public class CrmPayable implements Serializable {
     /**
      * 负责人ID
      */
+    @TableField(exist = false)
     private Long ownerId;
 
     /**
      * 所属部门ID
      */
+    @TableField(exist = false)
     private Long departmentId;
 
     /**
